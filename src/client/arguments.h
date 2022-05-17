@@ -42,13 +42,13 @@ private:
 public:
     ArgumentsBuilder() = default;
 
-    void setGuiPort(port_t guiPort);
+    ArgumentsBuilder setGuiPort(port_t guiPort);
 
-    void setPlayerName(const std::string &playerName);
+    ArgumentsBuilder setPlayerName(const std::string &playerName);
 
-    void setClientPort(port_t clientPort);
+    ArgumentsBuilder setClientPort(port_t clientPort);
 
-    void setServerPort(port_t serverPort);
+    ArgumentsBuilder setServerPort(port_t serverPort);
 
     Arguments build();
 };
