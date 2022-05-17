@@ -13,13 +13,18 @@ private:
     std::string player_name;
     port_t client_port;
     port_t server_port;
+    std::string server_address;
+    std::string gui_address;
 
 public:
-    Arguments(port_t _gui_port, std::string _player_name, port_t _client_port, port_t _server_port) :
+    Arguments(port_t _gui_port, std::string _player_name, port_t _client_port, port_t _server_port,
+              std::string _server_address, std::string _gui_address) :
         gui_port(_gui_port),
         player_name(std::move(_player_name)),
         client_port(_client_port),
-        server_port(_server_port) {}
+        server_port(_server_port),
+        server_address(std::move(_server_address)),
+        gui_address(std::move(_gui_address)) {}
 
     port_t getGuiPort() const;
 
@@ -38,6 +43,8 @@ private:
     std::string player_name;
     port_t client_port;
     port_t server_port;
+    std::string server_address;
+    std::string gui_address;
 
 public:
     ArgumentsBuilder() = default;
@@ -49,6 +56,10 @@ public:
     ArgumentsBuilder setClientPort(port_t clientPort);
 
     ArgumentsBuilder setServerPort(port_t serverPort);
+
+    ArgumentsBuilder setServerAddress(const std::string &serverAddress);
+
+    ArgumentsBuilder setGuiAddress(const std::string &guiAddress);
 
     Arguments build();
 };

@@ -14,7 +14,6 @@ namespace po = boost::program_options;
 using port_t = uint16_t;
 using address_t = std::string;
 
-
 #define GUI_ADDRESS "gui-address"
 #define HELP "help"
 #define PLAYER_NAME "player-name"
@@ -52,12 +51,25 @@ port_t get_port_from_address(const address_t &address) {
     return port;
 }
 
+std::string get_address_from_address(const address_t &address) {
+    size_t i = 0;
+
+    std::string res;
+    while (address[i] != ':') {
+        res += address[i++];
+    }
+
+    return res;
+}
+
 Arguments convert_parameters(po::variables_map &map) {
     ArgumentsBuilder args = ArgumentsBuilder();
     args = args.setPlayerName(map[PLAYER_NAME].as<std::string>())
             .setClientPort(map[PORT].as<port_t>())
             .setGuiPort(get_port_from_address(map[GUI_ADDRESS].as<std::string>()))
-            .setServerPort(get_port_from_address(map[SERVER_ADDRESS].as<std::string>()));
+            .setServerPort(get_port_from_address(map[SERVER_ADDRESS].as<std::string>()))
+            .setGuiAddress(get_address_from_address(map[GUI_ADDRESS].as<std::string>()))
+            .setServerAddress(get_address_from_address(map[SERVER_ADDRESS].as<std::string>()));
 
     return args.build();
 }
@@ -81,8 +93,7 @@ Arguments parse_arguments(int argc, char *argv[]) {
 
     try {
         po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), variables_map);
-//        po::store(po::parse_command_line(argc, argv, desc), variables_map);
-//        po::notify(variables_map);
+
         // if the help argument was given then show help options of the program
         if (variables_map.count("help")) {
             print_exit(desc);
@@ -107,7 +118,7 @@ Arguments parse_arguments(int argc, char *argv[]) {
 }
 
 Arguments ArgumentsBuilder::build() {
-    return {gui_port, player_name, client_port, server_port};
+    return {gui_port, player_name, client_port, server_port, server_address, gui_address};
 }
 
 ArgumentsBuilder ArgumentsBuilder::setGuiPort(port_t guiPort) {
@@ -127,6 +138,16 @@ ArgumentsBuilder ArgumentsBuilder::setClientPort(port_t clientPort) {
 
 ArgumentsBuilder ArgumentsBuilder::setServerPort(port_t serverPort) {
     server_port = serverPort;
+    return *this;
+}
+
+ArgumentsBuilder ArgumentsBuilder::setServerAddress(const std::string &serverAddress) {
+    server_address = serverAddress;
+    return *this;
+}
+
+ArgumentsBuilder ArgumentsBuilder::setGuiAddress(const std::string &guiAddress) {
+    gui_address = guiAddress;
     return *this;
 }
 
