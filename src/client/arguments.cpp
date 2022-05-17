@@ -167,3 +167,11 @@ port_t Arguments::getServerPort() const {
     return server_port;
 }
 
+const std::string &Arguments::getServerAddress() const {
+    return server_address;
+}
+
+const std::string &Arguments::getGuiAddress() const {
+    return gui_address;
+}
+

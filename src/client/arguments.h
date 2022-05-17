@@ -33,6 +33,10 @@ public:
     port_t getClientPort() const;
 
     port_t getServerPort() const;
+
+    const std::string &getServerAddress() const;
+
+    const std::string &getGuiAddress() const;
 };
 
 class ArgumentsBuilder {
