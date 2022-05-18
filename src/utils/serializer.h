@@ -24,7 +24,8 @@ public:
     }
 };
 
-template <typename T>
+template <class T>
+requires std::derived_from<T, Serializer>
 class ListSerializer : public Serializer {
     std::vector<T> list;
 public:
@@ -47,7 +48,8 @@ public:
     }
 };
 
-template <typename T, typename U>
+template <class T, class U>
+requires std::derived_from<T, Serializer> && std::derived_from<U, Serializer>
 class MapSerializer : public Serializer {
     std::map<T, U> map;
 public:

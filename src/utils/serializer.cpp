@@ -9,7 +9,8 @@ std::string StringSerializer::serialize() {
     return std::string{buffer, 1} + string;
 }
 
-template<typename T, typename U>
+template <class T, class U>
+requires std::derived_from<T, Serializer> && std::derived_from<U, Serializer>
 std::string MapSerializer<T, U>::serialize() {
     char buffer[4];
     *((uint32_t *) buffer) = htonl(map.size());
