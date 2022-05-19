@@ -48,18 +48,43 @@ public:
     }
 };
 
-template <class T, class U>
-requires std::derived_from<T, Serializer> && std::derived_from<U, Serializer>
+template <class T>
+requires std::derived_from<T, Serializer>
 class MapSerializer : public Serializer {
-    std::map<T, U> map;
+    std::map<uint8_t, T> map;
 public:
-    MapSerializer(const std::map<T, U> _map) : map(_map) {}
+    MapSerializer(const std::map<uint8_t, T> _map) : map(_map) {}
 
-    std::string serialize() override;
+    std::string serialize() override {
+        char buffer[4];
+        *((uint32_t *) buffer) = htonl((uint32_t) map.size());
 
-    const std::map<T, U> &getMap() const {
+        std::string result{buffer, 4};
+        for (auto &el : map) {
+            result += el.first; // this is type uint8_t so it is already serialized
+            result += el.second.serialize();
+        }
+
+        return result;
+    }
+
+    const std::map<uint8_t, T> &getMap() const {
         return map;
     }
 };
+
+//template <class T, class U>
+//requires std::derived_from<T, Serializer> && std::derived_from<U, Serializer>
+//class MapSerializer : public Serializer {
+//    std::map<T, U> map;
+//public:
+//    MapSerializer(const std::map<T, U> _map) : map(_map) {}
+//
+//    std::string serialize() override;
+//
+//    const std::map<T, U> &getMap() const {
+//        return map;
+//    }
+//};
 
 #endif //SIK_BOMBERMAN_SERIALIZER_H
