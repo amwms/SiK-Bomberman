@@ -14,6 +14,7 @@ public:
 
 class StringSerializer : public Serializer {
     std::string string;
+
 public:
     StringSerializer(std::string _string) : string(std::move(_string)) {}
 
@@ -26,6 +27,7 @@ public:
 
 class UINT16Serializer : public Serializer {
     uint16_t num;
+
 public:
     UINT16Serializer(uint16_t _num) : num(_num) {}
 
@@ -36,12 +38,26 @@ public:
     }
 };
 
+class UINT32Serializer : public Serializer {
+    uint32_t num;
+
+public:
+    UINT32Serializer(uint32_t _num) : num(_num) {}
+
+    std::string serialize() override;
+
+    uint32_t getNum() const {
+        return num;
+    }
+};
+
 template <class T>
 requires std::derived_from<T, Serializer>
 class ListSerializer : public Serializer {
     std::vector<T> list;
+
 public:
-    ListSerializer(const std::vector<T> list) : list(list) {}
+    ListSerializer(const std::vector<T> &_list) : list(_list) {}
 
     std::string serialize() override {
         char buffer[4];
@@ -63,9 +79,11 @@ public:
 template <class T>
 requires std::derived_from<T, Serializer>
 class MapSerializer : public Serializer {
-    std::map<uint8_t, T> map;
+    using key_t = uint8_t;
+    std::map<key_t, T> map;
+
 public:
-    MapSerializer(const std::map<uint8_t, T> _map) : map(_map) {}
+    MapSerializer(const std::map<key_t, T> _map) : map(_map) {}
 
     std::string serialize() override {
         char buffer[4];
@@ -80,7 +98,7 @@ public:
         return result;
     }
 
-    const std::map<uint8_t, T> &getMap() const {
+    const std::map<key_t, T> &getMap() const {
         return map;
     }
 };

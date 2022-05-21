@@ -15,3 +15,10 @@ std::string UINT16Serializer::serialize() {
 
     return buffer;
 }
+
+std::string UINT32Serializer::serialize() {
+    char buffer[4];
+    *((uint32_t *) buffer) = htonl(num);
+
+    return buffer;
+}
