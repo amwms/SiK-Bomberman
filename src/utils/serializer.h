@@ -24,6 +24,18 @@ public:
     }
 };
 
+class UINT16Serializer : public Serializer {
+    uint16_t num;
+public:
+    UINT16Serializer(uint16_t _num) : num(_num) {}
+
+    std::string serialize() override;
+
+    uint16_t getNum() const {
+        return num;
+    }
+};
+
 template <class T>
 requires std::derived_from<T, Serializer>
 class ListSerializer : public Serializer {
@@ -72,19 +84,5 @@ public:
         return map;
     }
 };
-
-//template <class T, class U>
-//requires std::derived_from<T, Serializer> && std::derived_from<U, Serializer>
-//class MapSerializer : public Serializer {
-//    std::map<T, U> map;
-//public:
-//    MapSerializer(const std::map<T, U> _map) : map(_map) {}
-//
-//    std::string serialize() override;
-//
-//    const std::map<T, U> &getMap() const {
-//        return map;
-//    }
-//};
 
 #endif //SIK_BOMBERMAN_SERIALIZER_H
