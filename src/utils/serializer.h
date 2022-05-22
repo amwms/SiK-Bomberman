@@ -25,6 +25,19 @@ public:
     }
 };
 
+class UINT8Serializer : public Serializer {
+    uint8_t num;
+
+public:
+    UINT8Serializer(uint8_t _num) : num(_num) {}
+
+    std::string serialize() override;
+
+    uint8_t getNum() const {
+        return num;
+    }
+};
+
 class UINT16Serializer : public Serializer {
     uint16_t num;
 

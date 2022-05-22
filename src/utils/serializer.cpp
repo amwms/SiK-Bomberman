@@ -22,3 +22,7 @@ std::string UINT32Serializer::serialize() {
 
     return buffer;
 }
+
+std::string UINT8Serializer::serialize() {
+    return std::string{static_cast<char>(num)};
+}
