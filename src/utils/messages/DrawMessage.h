@@ -4,8 +4,17 @@
 #include "../serializer.h"
 #include "../utils.h"
 
-class LobbyMessage : public Serializer {
-    uint8_t message_id = 0;
+class DrawMessage : public Serializer {
+protected:
+    uint8_t message_id;
+
+public:
+    explicit DrawMessage(uint8_t _message_id) : message_id(_message_id) {}
+};
+
+class LobbyMessage : public DrawMessage {
+    static const uint8_t LOBBY_MESSAGE_ID = 0;
+
     StringSerializer server_name;
     uint8_t players_count;
     UINT16Serializer size_x;
@@ -16,19 +25,20 @@ class LobbyMessage : public Serializer {
     MapSerializer<Player> players;
 
 public:
-    LobbyMessage(const std::string &serverName, uint8_t playersCount, uint16_t sizeX,
-                 uint16_t sizeY, uint16_t gameLength, uint16_t explosionRadius, uint16_t bombTimer,
-                 const MapSerializer<Player> &players) : server_name(serverName),
-                                                         players_count(playersCount), size_x(sizeX),
-                                                         size_y(sizeY), game_length(gameLength),
-                                                         explosion_radius(explosionRadius),
-                                                         bomb_timer(bombTimer), players(players) {}
+    LobbyMessage(const std::string &_server_name, uint8_t _players_count, uint16_t _size_x,
+                 uint16_t _size_y, uint16_t _game_length, uint16_t _explosion_radius, uint16_t _bomb_timer,
+                 const MapSerializer<Player> &players) : DrawMessage(LOBBY_MESSAGE_ID), server_name(_server_name),
+                                                         players_count(_players_count), size_x(_size_x),
+                                                         size_y(_size_y), game_length(_game_length),
+                                                         explosion_radius(_explosion_radius),
+                                                         bomb_timer(_bomb_timer), players(players) {}
 
     std::string serialize() override;
 };
 
-class GameMessage : public Serializer {
-    uint8_t message_id = 1;
+class GameMessage : public DrawMessage {
+    static const uint8_t GAME_MESSAGE_ID = 1;
+
     StringSerializer server_name;
     UINT16Serializer size_x;
     UINT16Serializer size_y;
@@ -42,15 +52,15 @@ class GameMessage : public Serializer {
     MapSerializer<score_t> scores;
 
 public:
-    GameMessage(const std::string &serverName, uint16_t sizeX,
-                uint16_t sizeY, uint16_t gameLength,
+    GameMessage(const std::string &_server_name, uint16_t _size_x,
+                uint16_t _size_y, uint16_t _game_length,
                 uint16_t turn, const MapSerializer<Player> &players,
-                const MapSerializer<Position> &playerPositions, const ListSerializer<Position> &blocks,
+                const MapSerializer<Position> &_player_positions, const ListSerializer<Position> &blocks,
                 const ListSerializer<Bomb> &bombs, const ListSerializer<Position> &explosions,
-                const MapSerializer<score_t> &scores) : server_name(serverName),
-                                                        size_x(sizeX), size_y(sizeY), game_length(gameLength),
+                const MapSerializer<score_t> &scores) : DrawMessage(GAME_MESSAGE_ID), server_name(_server_name),
+                                                        size_x(_size_x), size_y(_size_y), game_length(_game_length),
                                                         turn(turn), players(players),
-                                                        player_positions(playerPositions), blocks(blocks),
+                                                        player_positions(_player_positions), blocks(blocks),
                                                         bombs(bombs), explosions(explosions), scores(scores) {}
 
     std::string serialize() override;
