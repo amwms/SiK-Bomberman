@@ -4,8 +4,8 @@
 #include "serializer.h"
 
 using score_t = UINT32Serializer;
-using playerid_t = uint8_t;
-using bombid_t = UINT32Serializer;
+using player_id_t = UINT8Serializer;
+using bomb_id_t = UINT32Serializer;
 
 class Player : public Serializer {
     StringSerializer name;
