@@ -37,4 +37,13 @@ public:
     std::string serialize() override;
 };
 
+class Direction : public Serializer {
+    uint8_t direction_id;
+
+public:
+    Direction(uint8_t _direction_id) : direction_id(_direction_id) {}
+
+    std::string serialize() override;
+};
+
 #endif //SIK_BOMBERMAN_UTILS_H

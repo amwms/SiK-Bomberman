@@ -27,3 +27,7 @@ std::string Bomb::serialize() {
 
     return result;
 }
+
+std::string Direction::serialize() {
+    return std::string{static_cast<char>(direction_id)};
+}
