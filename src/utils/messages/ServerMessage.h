@@ -36,6 +36,20 @@ public:
                                                 bomb_timer(_bomb_timer) {}
 
     std::string serialize() override;
+
+    const StringSerializer &get_server_name() const;
+
+    const UINT8Serializer &get_players_count() const;
+
+    const UINT16Serializer &get_size_x() const;
+
+    const UINT16Serializer &get_size_y() const;
+
+    const UINT16Serializer &get_game_length() const;
+
+    const UINT16Serializer &get_explosion_radius() const;
+
+    const UINT16Serializer &get_bomb_timer() const;
 };
 
 class AcceptedPlayerMessage : public ServerMessage {
@@ -50,6 +64,10 @@ public:
         player_id(_player_id), player(_player) {}
 
     std::string serialize() override;
+
+    const player_id_t &get_player_id() const;
+
+    const Player &get_player() const;
 };
 
 class GameStartedMessage : public ServerMessage {
@@ -60,6 +78,8 @@ public:
     GameStartedMessage(MapSerializer<Player> &_players) : ServerMessage(GAME_STARTED_MESSAGE_ID), players(_players) {}
 
     std::string serialize() override;
+
+    MapSerializer<Player> &get_players();
 };
 
 class TurnMessage : public ServerMessage {
@@ -73,6 +93,10 @@ public:
         ServerMessage(TURN_MESSAGE_ID), turn(_turn), events(_events) {}
 
     std::string serialize() override;
+
+    UINT16Serializer &get_turn();
+
+    std::vector<std::shared_ptr<Event>> &get_events();
 };
 
 class GameEndedMessage : public ServerMessage {
