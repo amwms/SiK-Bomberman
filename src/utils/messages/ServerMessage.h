@@ -6,7 +6,7 @@
 #include "../event.h"
 #include <memory>
 
-class ServerMessage {
+class ServerMessage : public Serializer {
 protected:
     uint8_t message_id;
 
@@ -34,6 +34,8 @@ public:
                                                 size_y(_size_y), game_length(_game_length),
                                                 explosion_radius(_explosion_radius),
                                                 bomb_timer(_bomb_timer) {}
+
+    std::string serialize() override;
 };
 
 class AcceptedPlayerMessage : public ServerMessage {
@@ -46,6 +48,8 @@ public:
     AcceptedPlayerMessage(uint8_t _player_id, Player &_player) :
         ServerMessage(ACCEPTED_PLAYER_MESSAGE_ID),
         player_id(_player_id), player(_player) {}
+
+    std::string serialize() override;
 };
 
 class GameStartedMessage : public ServerMessage {
@@ -54,6 +58,8 @@ class GameStartedMessage : public ServerMessage {
 
 public:
     GameStartedMessage(MapSerializer<Player> &_players) : ServerMessage(GAME_STARTED_MESSAGE_ID), players(_players) {}
+
+    std::string serialize() override;
 };
 
 class TurnMessage : public ServerMessage {
@@ -65,6 +71,8 @@ class TurnMessage : public ServerMessage {
 public:
     TurnMessage(uint16_t _turn, std::vector<std::shared_ptr<Event>> &_events) :
         ServerMessage(TURN_MESSAGE_ID), turn(_turn), events(_events) {}
+
+    std::string serialize() override;
 };
 
 class GameEndedMessage : public ServerMessage {
@@ -73,6 +81,8 @@ class GameEndedMessage : public ServerMessage {
 
 public:
     GameEndedMessage(MapSerializer<score_t> &_scores) : ServerMessage(GAME_ENDED_MESSAGE_ID), scores(_scores) {}
+
+    std::string serialize() override;
 };
 
 #endif //SIK_BOMBERMAN_SERVERMESSAGE_H
