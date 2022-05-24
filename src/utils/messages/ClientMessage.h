@@ -19,7 +19,7 @@ class JoinServer: public ClientMessage {
     StringSerializer name;
 
 public:
-    JoinServer(std::string &_name) : ClientMessage(JOIN_SERVER_MESSAGE_ID), name(_name) {}
+    JoinServer(const std::string &_name) : ClientMessage(JOIN_SERVER_MESSAGE_ID), name(_name) {}
 
     std::string serialize() override;
 };
