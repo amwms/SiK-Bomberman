@@ -1,3 +1,4 @@
+#include <memory>
 #include "InputMessage.h"
 
 std::string InputMessage::serialize() {
@@ -9,4 +10,16 @@ std::string MoveGui::serialize() {
     result += direction.serialize();
 
     return result;
+}
+
+std::shared_ptr<ClientMessage> PlaceBombGui::to_client_message() {
+    return std::make_shared<PlaceBombServer>();
+}
+
+std::shared_ptr<ClientMessage> PlaceBlockGui::to_client_message() {
+    return std::make_shared<PlaceBlockServer>();
+}
+
+std::shared_ptr<ClientMessage> MoveGui::to_client_message() {
+    return std::make_shared<MoveServer>(direction);
 }

@@ -44,6 +44,7 @@ class MoveServer: public ClientMessage {
 
 public:
     MoveServer(uint8_t _direction) : ClientMessage(MOVE_MESSAGE_ID), direction(_direction) {}
+    MoveServer(Direction &_direction) : ClientMessage(MOVE_MESSAGE_ID), direction(_direction) {}
 
     std::string serialize() override;
 };
