@@ -20,7 +20,7 @@ public:
 
     std::string serialize() override;
 
-    const std::string &getString() const {
+    std::string get_string() const {
         return string;
     }
 };
@@ -33,8 +33,12 @@ public:
 
     std::string serialize() override;
 
-    uint8_t getNum() const {
+    uint8_t get_num() const {
         return num;
+    }
+
+    bool operator< (const UINT8Serializer &a) const {
+        return this->num < a.num;
     }
 };
 
@@ -46,7 +50,7 @@ public:
 
     std::string serialize() override;
 
-    uint16_t getNum() const {
+    uint16_t get_num() const {
         return num;
     }
 };
@@ -59,7 +63,7 @@ public:
 
     std::string serialize() override;
 
-    uint32_t getNum() const {
+    uint32_t get_num() const {
         return num;
     }
 };
@@ -84,7 +88,7 @@ public:
         return result;
     }
 
-    const std::vector<T> &getList() const {
+    const std::vector<T> &get_list() const {
         return list;
     }
 };
@@ -112,7 +116,7 @@ public:
         return result;
     }
 
-    const std::map<key_t, T> &getMap() const {
+    std::map<key_t, T> &get_map() {
         return map;
     }
 };
