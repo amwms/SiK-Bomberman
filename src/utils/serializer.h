@@ -97,6 +97,7 @@ class MapSerializer : public Serializer {
 
 public:
     MapSerializer(const std::map<key_t, T> _map) : map(_map) {}
+    MapSerializer() : map() {}
 
     std::string serialize() override {
         char buffer[4];
