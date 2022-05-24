@@ -10,7 +10,7 @@ class GuiHandler {
     ServerConnector &server_connector;
     GuiConnector &gui_connector;
 
-    void handle();
+    [[noreturn]] void handle();
 
 public:
     GuiHandler(ServerConnector &serverConnector,
