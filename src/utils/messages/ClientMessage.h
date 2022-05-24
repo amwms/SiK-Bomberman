@@ -11,7 +11,7 @@ protected:
 public:
     ClientMessage(uint8_t _message_id) : message_id(_message_id) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class JoinServer: public ClientMessage {
@@ -21,7 +21,7 @@ class JoinServer: public ClientMessage {
 public:
     JoinServer(const std::string &_name) : ClientMessage(JOIN_SERVER_MESSAGE_ID), name(_name) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class PlaceBombServer: public ClientMessage {
@@ -46,7 +46,7 @@ public:
     MoveServer(uint8_t _direction) : ClientMessage(MOVE_MESSAGE_ID), direction(_direction) {}
     MoveServer(Direction &_direction) : ClientMessage(MOVE_MESSAGE_ID), direction(_direction) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 

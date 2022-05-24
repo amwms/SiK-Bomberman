@@ -13,8 +13,9 @@ class Player : public Serializer {
 
 public:
     Player(const std::string &_name, const std::string &_address) : name(_name), address(_address) {}
+    Player(StringSerializer &_name, StringSerializer &_address) : name(_name), address(_address) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class Position : public Serializer {
@@ -24,7 +25,7 @@ class Position : public Serializer {
 public:
     Position(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class Bomb : public Serializer {
@@ -34,7 +35,7 @@ class Bomb : public Serializer {
 public:
     Bomb(const Position &_position, uint16_t _timer) : position(_position), timer(_timer) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class Direction : public Serializer {
@@ -43,7 +44,7 @@ class Direction : public Serializer {
 public:
     Direction(uint8_t _direction_id) : direction_id(_direction_id) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 #endif //SIK_BOMBERMAN_UTILS_H

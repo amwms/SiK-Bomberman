@@ -21,7 +21,7 @@ public:
     BombPlacedEvent(bomb_id_t &_bomb_id, Position &_position) :
         Event(BOMB_PLACED_EVENT_ID), bomb_id(_bomb_id), position(_position) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class BombExplodedEvent : public Event {
@@ -36,7 +36,7 @@ public:
             Event(BOMB_EXPLODED_EVENT_ID), bomb_id(_bomb_id),
             robots_destroyed(_robots_destroyed), blocks_destroyed(_blocks_destroyed) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class PlayerMovedEvent : public Event {
@@ -48,7 +48,7 @@ public:
     PlayerMovedEvent(const bomb_id_t &_bomb_id, const Position &_position) :
             Event(PLAYER_MOVED_EVENT_ID), bomb_id(_bomb_id), position(_position) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class BlockPlacedEvent : public Event {
@@ -58,7 +58,7 @@ class BlockPlacedEvent : public Event {
 public:
     BlockPlacedEvent(const Position &_position) : Event(BLOCK_PLACED_EVENT_ID), position(_position) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 

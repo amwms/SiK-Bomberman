@@ -1,11 +1,11 @@
 #include <memory>
 #include "InputMessage.h"
 
-std::string InputMessage::serialize() {
+std::string InputMessage::serialize() const {
     return std::string{static_cast<char>(message_id)};
 }
 
-std::string MoveGui::serialize() {
+std::string MoveGui::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += direction.serialize();
 

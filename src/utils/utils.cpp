@@ -1,6 +1,6 @@
 #include "utils.h"
 
-std::string Player::serialize() {
+std::string Player::serialize() const {
     std::string result;
 
     result += name.serialize();
@@ -9,7 +9,7 @@ std::string Player::serialize() {
     return result;
 }
 
-std::string Position::serialize() {
+std::string Position::serialize() const {
     std::string result;
 
     result += x.serialize();
@@ -19,7 +19,7 @@ std::string Position::serialize() {
 }
 
 
-std::string Bomb::serialize() {
+std::string Bomb::serialize() const {
     std::string result;
 
     result += position.serialize();
@@ -28,6 +28,6 @@ std::string Bomb::serialize() {
     return result;
 }
 
-std::string Direction::serialize() {
+std::string Direction::serialize() const {
     return std::string{static_cast<char>(direction_id)};
 }

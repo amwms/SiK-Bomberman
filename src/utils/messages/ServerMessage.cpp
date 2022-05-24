@@ -1,6 +1,6 @@
 #include "ServerMessage.h"
 
-std::string HelloMessage::serialize() {
+std::string HelloMessage::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += server_name.serialize();
     result += players_count.serialize();
@@ -41,7 +41,7 @@ const UINT16Serializer &HelloMessage::get_bomb_timer() const {
     return bomb_timer;
 }
 
-std::string AcceptedPlayerMessage::serialize() {
+std::string AcceptedPlayerMessage::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += player_id.serialize();
     result += player.serialize();
@@ -57,7 +57,7 @@ const Player &AcceptedPlayerMessage::get_player() const {
     return player;
 }
 
-std::string GameStartedMessage::serialize() {
+std::string GameStartedMessage::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += players.serialize();
 
@@ -68,7 +68,7 @@ MapSerializer<Player> &GameStartedMessage::get_players() {
     return players;
 }
 
-std::string TurnMessage::serialize() {
+std::string TurnMessage::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += turn.serialize();
 
@@ -87,7 +87,7 @@ std::vector<std::shared_ptr<Event>> &TurnMessage::get_events() {
     return events;
 }
 
-std::string GameEndedMessage::serialize() {
+std::string GameEndedMessage::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += scores.serialize();
 

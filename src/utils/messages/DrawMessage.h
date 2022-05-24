@@ -33,7 +33,7 @@ public:
                                                          explosion_radius(_explosion_radius),
                                                          bomb_timer(_bomb_timer), players(players) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 class GameMessage : public DrawMessage {
@@ -63,7 +63,7 @@ public:
                                                         player_positions(_player_positions), blocks(blocks),
                                                         bombs(bombs), explosions(explosions), scores(scores) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 #endif //SIK_BOMBERMAN_DRAWMESSAGE_H

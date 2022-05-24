@@ -1,6 +1,6 @@
 #include "DrawMessage.h"
 
-std::string LobbyMessage::serialize() {
+std::string LobbyMessage::serialize() const {
     std::string result;
 
     result += static_cast<char>(message_id);
@@ -16,7 +16,7 @@ std::string LobbyMessage::serialize() {
     return result;
 }
 
-std::string GameMessage::serialize() {
+std::string GameMessage::serialize() const {
     std::string result;
 
     result += static_cast<char>(message_id);

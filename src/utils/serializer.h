@@ -9,7 +9,7 @@
 
 class Serializer {
 public:
-    virtual std::string serialize() = 0;
+    virtual std::string serialize() const = 0;
 };
 
 class StringSerializer : public Serializer {
@@ -18,7 +18,7 @@ class StringSerializer : public Serializer {
 public:
     StringSerializer(std::string _string) : string(std::move(_string)) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 
     std::string get_string() const {
         return string;
@@ -31,7 +31,7 @@ class UINT8Serializer : public Serializer {
 public:
     UINT8Serializer(uint8_t _num) : num(_num) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 
     uint8_t get_num() const {
         return num;
@@ -48,7 +48,7 @@ class UINT16Serializer : public Serializer {
 public:
     UINT16Serializer(uint16_t _num) : num(_num) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 
     uint16_t get_num() const {
         return num;
@@ -61,7 +61,7 @@ class UINT32Serializer : public Serializer {
 public:
     UINT32Serializer(uint32_t _num) : num(_num) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 
     uint32_t get_num() const {
         return num;
@@ -76,7 +76,7 @@ class ListSerializer : public Serializer {
 public:
     ListSerializer(const std::vector<T> &_list) : list(_list) {}
 
-    std::string serialize() override {
+    std::string serialize() const override {
         char buffer[4];
         *((uint32_t *) buffer) = htonl((uint32_t) list.size());
 
@@ -96,21 +96,22 @@ public:
 template <class T>
 requires std::derived_from<T, Serializer>
 class MapSerializer : public Serializer {
-    using key_t = uint8_t;
+    using key_t = UINT8Serializer;//uint8_t;
     std::map<key_t, T> map;
 
 public:
     MapSerializer(const std::map<key_t, T> _map) : map(_map) {}
     MapSerializer() : map() {}
 
-    std::string serialize() override {
+    std::string serialize() const override {
         char buffer[4];
         *((uint32_t *) buffer) = htonl((uint32_t) map.size());
 
         std::string result{buffer, 4};
-        for (auto &el : map) {
-            result += el.first; // this is type uint8_t so it is already serialized
-            result += el.second.serialize();
+        for (auto &[key, value] : map) {
+            result += key.serialize();
+            // this is type uint8_t so it is already serialized
+            result += value.serialize();
         }
 
         return result;

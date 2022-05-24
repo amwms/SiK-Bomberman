@@ -1,6 +1,6 @@
 #include "event.h"
 
-std::string BombPlacedEvent::serialize() {
+std::string BombPlacedEvent::serialize() const {
     std::string result;
 
     result += static_cast<char>(message_id);
@@ -10,7 +10,7 @@ std::string BombPlacedEvent::serialize() {
     return result;
 }
 
-std::string BombExplodedEvent::serialize() {
+std::string BombExplodedEvent::serialize() const {
     std::string result;
 
     result += static_cast<char>(message_id);
@@ -21,7 +21,7 @@ std::string BombExplodedEvent::serialize() {
     return result;
 }
 
-std::string PlayerMovedEvent::serialize() {
+std::string PlayerMovedEvent::serialize() const {
     std::string result;
 
     result += static_cast<char>(message_id);
@@ -31,7 +31,7 @@ std::string PlayerMovedEvent::serialize() {
     return result;
 }
 
-std::string BlockPlacedEvent::serialize() {
+std::string BlockPlacedEvent::serialize() const {
     std::string result;
 
     result += static_cast<char>(message_id);

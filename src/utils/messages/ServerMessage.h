@@ -35,7 +35,18 @@ public:
                                                 explosion_radius(_explosion_radius),
                                                 bomb_timer(_bomb_timer) {}
 
-    std::string serialize() override;
+    HelloMessage(StringSerializer &_server_name,
+                               UINT8Serializer &_players_count,
+                               UINT16Serializer &_size_x, UINT16Serializer &_size_y,
+                               UINT16Serializer &_game_length, UINT16Serializer &_explosion_radius,
+                               UINT16Serializer &_bomb_timer) :
+                               ServerMessage(HELLO_MESSAGE_ID), server_name(_server_name),
+                                                                    players_count(_players_count), size_x(_size_x),
+                                                                    size_y(_size_y), game_length(_game_length),
+                                                                    explosion_radius(_explosion_radius),
+                                                                    bomb_timer(_bomb_timer) {}
+
+    std::string serialize() const override;
 
     const StringSerializer &get_server_name() const;
 
@@ -63,7 +74,11 @@ public:
         ServerMessage(ACCEPTED_PLAYER_MESSAGE_ID),
         player_id(_player_id), player(_player) {}
 
-    std::string serialize() override;
+    AcceptedPlayerMessage(player_id_t &_player_id, Player &_player) :
+            ServerMessage(ACCEPTED_PLAYER_MESSAGE_ID),
+            player_id(_player_id), player(_player) {}
+
+    std::string serialize() const override;
 
     const player_id_t &get_player_id() const;
 
@@ -77,7 +92,7 @@ class GameStartedMessage : public ServerMessage {
 public:
     GameStartedMessage(MapSerializer<Player> &_players) : ServerMessage(GAME_STARTED_MESSAGE_ID), players(_players) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 
     MapSerializer<Player> &get_players();
 };
@@ -92,7 +107,10 @@ public:
     TurnMessage(uint16_t _turn, std::vector<std::shared_ptr<Event>> &_events) :
         ServerMessage(TURN_MESSAGE_ID), turn(_turn), events(_events) {}
 
-    std::string serialize() override;
+    TurnMessage(UINT16Serializer &_turn, std::vector<std::shared_ptr<Event>> &_events) :
+            ServerMessage(TURN_MESSAGE_ID), turn(_turn), events(_events) {}
+
+    std::string serialize() const override;
 
     UINT16Serializer &get_turn();
 
@@ -106,7 +124,7 @@ class GameEndedMessage : public ServerMessage {
 public:
     GameEndedMessage(MapSerializer<score_t> &_scores) : ServerMessage(GAME_ENDED_MESSAGE_ID), scores(_scores) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 };
 
 #endif //SIK_BOMBERMAN_SERVERMESSAGE_H

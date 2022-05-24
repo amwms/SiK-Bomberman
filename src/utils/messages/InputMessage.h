@@ -12,7 +12,7 @@ protected:
 public:
     InputMessage(uint8_t _message_id) : message_id(_message_id) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 
     virtual std::shared_ptr<ClientMessage> to_client_message() = 0;
 };
@@ -42,7 +42,7 @@ class MoveGui : public InputMessage {
 public:
     MoveGui(uint8_t _direction_id) : InputMessage(MOVE_MESSAGE_ID), direction(_direction_id) {}
 
-    std::string serialize() override;
+    std::string serialize() const override;
 
     std::shared_ptr<ClientMessage> to_client_message() override;
 };
