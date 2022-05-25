@@ -24,6 +24,7 @@ class Position : public Serializer {
 
 public:
     Position(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
+    Position(UINT16Serializer &_x, UINT16Serializer &_y) : x(_x), y(_y) {}
 
     std::string serialize() const override;
 };

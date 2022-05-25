@@ -93,3 +93,7 @@ std::string GameEndedMessage::serialize() const {
 
     return result;
 }
+
+MapSerializer<score_t> &GameEndedMessage::getScores() {
+    return scores;
+}

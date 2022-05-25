@@ -125,6 +125,8 @@ public:
     GameEndedMessage(MapSerializer<score_t> &_scores) : ServerMessage(GAME_ENDED_MESSAGE_ID), scores(_scores) {}
 
     std::string serialize() const override;
+
+    MapSerializer<score_t> &getScores();
 };
 
 #endif //SIK_BOMBERMAN_SERVERMESSAGE_H

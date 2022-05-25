@@ -60,7 +60,14 @@ Player tcp_deserialize_to_player_serializer(ServerConnector &server_connector) {
     return {name, address};
 }
 
-MapSerializer<Player> tcp_deserialize_to_map_serializer(ServerConnector &server_connector) {
+Position tcp_deserialize_to_position_serializer (ServerConnector &server_connector) {
+    UINT16Serializer x = tcp_deserialize_to_uint16_serializer(server_connector);
+    UINT16Serializer y = tcp_deserialize_to_uint16_serializer(server_connector);
+
+    return {x, y};
+}
+
+MapSerializer<Player> tcp_deserialize_to_player_map_serializer(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(4);
     assert(number.size() == 4);
     uint32_t true_number = {*((uint32_t*) number.data())};
@@ -75,6 +82,115 @@ MapSerializer<Player> tcp_deserialize_to_map_serializer(ServerConnector &server_
     }
 
     return {map};
+}
+
+MapSerializer<UINT32Serializer> tcp_deserialize_to_uint32_map_serializer(ServerConnector &server_connector) {
+    std::string number = server_connector.receive_message(4);
+    assert(number.size() == 4);
+    uint32_t true_number = {*((uint32_t*) number.data())};
+
+    std::map<UINT8Serializer, UINT32Serializer> map;
+
+    for (size_t i = 0; i < true_number; i++) {
+        UINT8Serializer key = tcp_deserialize_to_uint8_serializer(server_connector);
+        UINT32Serializer value = tcp_deserialize_to_uint32_serializer(server_connector);
+
+        map.insert({key, value});
+    }
+
+    return {map};
+}
+
+ListSerializer<UINT8Serializer> tcp_deserialize_to_uint8_list_serializer(ServerConnector &server_connector) {
+    std::string number = server_connector.receive_message(4);
+    assert(number.size() == 4);
+    uint32_t true_number = {*((uint32_t*) number.data())};
+
+    std::vector<UINT8Serializer> list;
+
+    for (size_t i = 0; i < true_number; i++) {
+        UINT8Serializer element = tcp_deserialize_to_uint8_serializer(server_connector);
+        list.push_back(element);
+    }
+
+    return {list};
+}
+
+ListSerializer<Position> tcp_deserialize_to_position_list_serializer(ServerConnector &server_connector) {
+    std::string number = server_connector.receive_message(4);
+    assert(number.size() == 4);
+    uint32_t true_number = {*((uint32_t*) number.data())};
+
+    std::vector<Position> list;
+
+    for (size_t i = 0; i < true_number; i++) {
+        Position element = tcp_deserialize_to_position_serializer(server_connector);
+        list.push_back(element);
+    }
+
+    return {list};
+}
+
+std::shared_ptr<BombPlacedEvent> tcp_deserialize_to_bomb_placed_event(ServerConnector &server_connector) {
+    UINT32Serializer bomb_id = tcp_deserialize_to_uint32_serializer(server_connector);
+    Position position = tcp_deserialize_to_position_serializer(server_connector);
+
+    return std::make_shared<BombPlacedEvent>(bomb_id, position);
+}
+
+
+std::shared_ptr<BombExplodedEvent> tcp_deserialize_to_bomb_exploded_event(ServerConnector &server_connector) {
+    UINT32Serializer bomb_id = tcp_deserialize_to_uint32_serializer(server_connector);
+    ListSerializer<player_id_t> robots_destroyed = tcp_deserialize_to_uint8_list_serializer(server_connector);
+    ListSerializer<Position> blocks_destroyed = tcp_deserialize_to_position_list_serializer(server_connector);
+
+    return std::make_shared<BombExplodedEvent>(bomb_id, robots_destroyed, blocks_destroyed);
+}
+
+std::shared_ptr<PlayerMovedEvent> tcp_deserialize_to_player_moved_event(ServerConnector &server_connector) {
+    UINT8Serializer player_id = tcp_deserialize_to_uint8_serializer(server_connector);
+   Position position = tcp_deserialize_to_position_serializer(server_connector);
+
+    return std::make_shared<PlayerMovedEvent>(player_id, position);
+}
+
+std::shared_ptr<BlockPlacedEvent> tcp_deserialize_to_block_placed_event(ServerConnector &server_connector) {
+    Position position = tcp_deserialize_to_position_serializer(server_connector);
+
+    return std::make_shared<BlockPlacedEvent>(position);
+}
+
+std::shared_ptr<Event> tcp_deserialize_to_event_message(ServerConnector &server_connector) {
+    std::string message_id = server_connector.receive_message(1);
+    assert(message_id.size() == 1);
+
+    switch (message_id[0]) {
+        case 0:
+            return tcp_deserialize_to_bomb_placed_event(server_connector);
+        case 1:
+            return tcp_deserialize_to_bomb_exploded_event(server_connector);
+        case 2:
+            return  tcp_deserialize_to_player_moved_event(server_connector);
+        case 3:
+            return tcp_deserialize_to_block_placed_event(server_connector);
+        default:
+            throw DeserializationException{};
+    }
+}
+
+std::vector<std::shared_ptr<Event>> tcp_deserialize_to_event_vector(ServerConnector &server_connector) {
+    std::string number = server_connector.receive_message(4);
+    assert(number.size() == 4);
+    uint32_t true_number = {*((uint32_t*) number.data())};
+
+    std::vector<std::shared_ptr<Event>> list;
+
+    for (size_t i = 0; i < true_number; i++) {
+        std::shared_ptr<Event> element = tcp_deserialize_to_event_message(server_connector);
+        list.push_back(element);
+    }
+
+    return list;
 }
 
 HelloMessage tcp_deserialize_to_hello_message(ServerConnector &server_connector) {
@@ -97,7 +213,20 @@ AcceptedPlayerMessage tcp_deserialize_to_accepted_player_message(ServerConnector
 }
 
 GameStartedMessage tcp_deserialize_to_game_started_message(ServerConnector &server_connector) {
-    MapSerializer<Player> players = tcp_deserialize_to_map_serializer(server_connector);
+    MapSerializer<Player> players = tcp_deserialize_to_player_map_serializer(server_connector);
 
     return {players};
+}
+
+TurnMessage tcp_deserialize_to_turn_message(ServerConnector &server_connector) {
+    UINT16Serializer turn = tcp_deserialize_to_uint16_serializer(server_connector);
+    std::vector<std::shared_ptr<Event>> events = tcp_deserialize_to_event_vector(server_connector);
+
+    return {turn, events};
+}
+
+GameEndedMessage tcp_deserialize_to_game_ended_message(ServerConnector &server_connector) {
+    MapSerializer<score_t> scores = tcp_deserialize_to_uint32_map_serializer(server_connector);
+
+    return {scores};
 }
