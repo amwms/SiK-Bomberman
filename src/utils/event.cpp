@@ -1,3 +1,4 @@
+#include <iostream>
 #include "event.h"
 
 std::string BombPlacedEvent::serialize() const {
@@ -28,8 +29,6 @@ std::string BombExplodedEvent::serialize() const {
 bool out_of_bounds(ClientGameState &game_state, Position &position) {
     return position.get_x() >= game_state.size_x.get_num()
         && position.get_y() >= game_state.size_y.get_num();
-//        && position.get_y() < 0
-//        && position.get_x() < 0;
 }
 
 void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
@@ -84,8 +83,6 @@ void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
 }
 
 void BombExplodedEvent::handle(ClientGameState &game_state) {
-    game_state.bombs.erase(bomb_id);
-
     for (auto &robot : robots_destroyed.get_list()) {
         game_state.robots_destroyed_in_turn.insert(robot);
     }
@@ -95,6 +92,7 @@ void BombExplodedEvent::handle(ClientGameState &game_state) {
     }
 
     count_explosions(game_state, bomb_id);
+    game_state.bombs.erase(bomb_id);
 }
 
 std::string PlayerMovedEvent::serialize() const {
