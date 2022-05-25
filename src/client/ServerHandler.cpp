@@ -20,6 +20,8 @@ static void handle_hello_message(ServerConnector &server_connector, ClientGameSt
     game_state.game_length = hello_message.get_game_length();
     game_state.explosion_radius = hello_message.get_explosion_radius();
     game_state.bomb_timer = hello_message.get_bomb_timer();
+
+    game_state.should_send_update_to_gui = true;
 }
 
 static void handle_accepted_player_message(ServerConnector &server_connector, ClientGameState &game_state) {
@@ -71,6 +73,7 @@ static void handle_game_ended_message(ServerConnector &server_connector, ClientG
 
     game_state.scores = game_ended_message.getScores();
     game_state.in_lobby = true;
+    game_state.should_send_update_to_gui = true;
 }
 
 void ServerHandler::send_message_to_gui() {
