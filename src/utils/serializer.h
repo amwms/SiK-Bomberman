@@ -53,6 +53,10 @@ public:
     uint16_t get_num() const {
         return num;
     }
+
+    bool operator< (const UINT16Serializer &a) const {
+        return this->num < a.num;
+    }
 };
 
 class UINT32Serializer : public Serializer {
@@ -65,6 +69,10 @@ public:
 
     uint32_t get_num() const {
         return num;
+    }
+
+    bool operator< (const UINT32Serializer &a) const {
+        return this->num < a.num;
     }
 };
 
