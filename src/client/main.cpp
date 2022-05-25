@@ -1,5 +1,11 @@
-#include <iostream>
 #include "arguments.h"
+#include "../utils/serializer.h"
+#include "../utils/utils.h"
+#include "../utils/messages/DrawMessage.h"
+#include "GuiConnector.h"
+#include "client_connections.h"
+#include "GuiHandler.h"
+#include "ServerHandler.h"
 
 #define GUI_ADDRESS "gui-address"
 #define HELP "help"
@@ -7,19 +13,20 @@
 #define PORT "port"
 #define SERVER_ADDRESS "server-address"
 
-void check_arguments_class(Arguments &arguments) {
-    std::cout << "---------- Checking Arguments class ----------\n";
-    std::cout << GUI_ADDRESS" was set to: " << arguments.getGuiAddress() << ", Port: " << arguments.getGuiPort() << "\n";
-    std::cout << PLAYER_NAME" was set to: " << arguments.getPlayerName() << "\n";
-    std::cout << PORT" was set to: " << arguments.getClientPort() << "\n";
-    std::cout << SERVER_ADDRESS" was set to: " <<  arguments.getServerAddress() << ", Port: " << arguments.getServerPort() << "\n";
-}
-
 int main(int argc, char *argv[]) {
     Arguments arguments = parse_arguments(argc, argv);
 
-    check_arguments_class(arguments);
+    boost::asio::io_context io_context;
+    GuiConnector gui_connector{io_context, arguments.getGuiAddress(), arguments.getGuiPort(), arguments.getClientPort()};
+    ServerConnector server_connector{io_context, arguments.getServerAddress(), arguments.getServerPort()};
+    ClientGameState game_state{};
+    GuiHandler gui_handler{server_connector, gui_connector, game_state, arguments.getPlayerName()};
+    ServerHandler server_handler{server_connector, gui_connector, game_state};
 
-    std::cout << "Hello, World!\n";
+    std::thread gui_handler_thread(gui_handler);
+    std::thread server_handler_thread(server_handler);
+
+    while (true) {}
+
     return 0;
 }

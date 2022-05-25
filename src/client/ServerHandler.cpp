@@ -13,8 +13,6 @@
 static void handle_hello_message(ServerConnector &server_connector, ClientGameState &game_state) {
     HelloMessage hello_message =  tcp_deserialize_to_hello_message(server_connector);
 
-    printf("Hello message: '%s'\n", hello_message.serialize().c_str());
-
     game_state.server_name = hello_message.get_server_name();
     game_state.players_count = hello_message.get_players_count();
     game_state.size_x = hello_message.get_size_x();
@@ -26,8 +24,6 @@ static void handle_hello_message(ServerConnector &server_connector, ClientGameSt
 
 static void handle_accepted_player_message(ServerConnector &server_connector, ClientGameState &game_state) {
     AcceptedPlayerMessage accepted_player_message = tcp_deserialize_to_accepted_player_message(server_connector);
-
-    printf("Accepted player: %s\n", accepted_player_message.serialize().c_str());
 
     game_state.players
               .get_map()
@@ -50,9 +46,6 @@ static void initialize_player_scores(ClientGameState &game_state) {
 
 static void handle_game_started_message(ServerConnector &server_connector, ClientGameState &game_state) {
     GameStartedMessage game_started_message = tcp_deserialize_to_game_started_message(server_connector);
-    std::cerr << "[GAME STARTED DONE]" << std::endl;
-
-    printf("Game started: %s\n", game_started_message.serialize().c_str());
 
     game_state.players = game_started_message.get_players();
     initialize_player_positions(game_state);
@@ -62,8 +55,6 @@ static void handle_game_started_message(ServerConnector &server_connector, Clien
 
 static void handle_turn_message(ServerConnector &server_connector, ClientGameState &game_state) {
     TurnMessage turn_message = tcp_deserialize_to_turn_message(server_connector);
-
-    printf("Turn : %s\n", turn_message.serialize().c_str());
 
     game_state.turn = turn_message.get_turn();
 
@@ -78,24 +69,17 @@ static void handle_turn_message(ServerConnector &server_connector, ClientGameSta
 static void handle_game_ended_message(ServerConnector &server_connector, ClientGameState &game_state) {
     GameEndedMessage game_ended_message = tcp_deserialize_to_game_ended_message(server_connector);
 
-    printf("Game ended message: %s\n", game_ended_message.serialize().c_str());
-
     game_state.scores = game_ended_message.getScores();
     game_state.in_lobby = true;
 }
 
 void ServerHandler::send_message_to_gui() {
-    std::cerr << "GUI send?" << std::endl;
     if (game_state.should_send_update_to_gui) {
-        std::cerr << "Should send message!!!!!!!! \n";
-
         if (game_state.in_lobby) {
             gui_connector.send_message(game_state.to_lobby_massage().serialize());
-            std::cerr << "[SENT MESSAGE: LOBBY] \n";
         }
         else {
             gui_connector.send_message(game_state.to_game_message().serialize());
-            std::cerr << "[SENT MESSAGE: GAME] \n";
         }
 
         game_state.should_send_update_to_gui = false;
@@ -103,9 +87,7 @@ void ServerHandler::send_message_to_gui() {
 }
 
 void ServerHandler::handle() {
-    std::cerr << "[WAITING]" << std::endl;
     std::string message_id = server_connector.receive_message(1);
-    std::cerr << "[DONE]=" << ((int) message_id[0]) << std::endl;
     assert(message_id.size() == 1);
 
     switch (message_id[0]) {
@@ -134,13 +116,13 @@ void ServerHandler::handle() {
 }
 
 void ServerHandler::operator()() {
-//    try {
+    try {
         while (true) {
             handle();
         }
-//    }
-//    catch (std::exception &exception) {
-//        std::cerr << "EXCPETION IN SERVER HANDLER!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-//        throw;
-//    }
+    }
+    catch (std::exception &exception) {
+        std::cerr << exception.what() << std::endl;
+        exit(1);
+    }
 }
