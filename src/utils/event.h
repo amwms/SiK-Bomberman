@@ -3,6 +3,7 @@
 
 #include "serializer.h"
 #include "utils.h"
+#include "../client/ClientGameState.h"
 
 class Event : public Serializer {
 protected:
@@ -10,6 +11,8 @@ protected:
 
 public:
     Event(uint8_t _message_id) : message_id(_message_id) {}
+
+    virtual void handle(ClientGameState &game_state) = 0;
 };
 
 class BombPlacedEvent : public Event {
@@ -22,6 +25,8 @@ public:
         Event(BOMB_PLACED_EVENT_ID), bomb_id(_bomb_id), position(_position) {}
 
     std::string serialize() const override;
+
+    void handle(ClientGameState &game_state) override;
 };
 
 class BombExplodedEvent : public Event {
@@ -37,6 +42,8 @@ public:
             robots_destroyed(_robots_destroyed), blocks_destroyed(_blocks_destroyed) {}
 
     std::string serialize() const override;
+
+    void handle(ClientGameState &game_state) override;
 };
 
 class PlayerMovedEvent : public Event {
@@ -49,6 +56,8 @@ public:
             Event(PLAYER_MOVED_EVENT_ID), player_id(_player_id), position(_position) {}
 
     std::string serialize() const override;
+
+    void handle(ClientGameState &game_state) override;
 };
 
 class BlockPlacedEvent : public Event {
@@ -59,6 +68,8 @@ public:
     BlockPlacedEvent(const Position &_position) : Event(BLOCK_PLACED_EVENT_ID), position(_position) {}
 
     std::string serialize() const override;
+
+    void handle(ClientGameState &game_state) override;
 };
 
 
