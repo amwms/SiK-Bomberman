@@ -25,7 +25,7 @@ std::string PlayerMovedEvent::serialize() const {
     std::string result;
 
     result += static_cast<char>(message_id);
-    result += bomb_id.serialize();
+    result += player_id.serialize();
     result += position.serialize();
 
     return result;

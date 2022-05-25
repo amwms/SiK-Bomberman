@@ -25,7 +25,7 @@ public:
 };
 
 class BombExplodedEvent : public Event {
-    static const uint8_t BOMB_EXPLODED_EVENT_ID = 0;
+    static const uint8_t BOMB_EXPLODED_EVENT_ID = 1;
     bomb_id_t bomb_id;
     ListSerializer<player_id_t> robots_destroyed;
     ListSerializer<Position> blocks_destroyed;
@@ -40,19 +40,19 @@ public:
 };
 
 class PlayerMovedEvent : public Event {
-    static const uint8_t PLAYER_MOVED_EVENT_ID = 0;
-    bomb_id_t bomb_id;
+    static const uint8_t PLAYER_MOVED_EVENT_ID = 2;
+    player_id_t player_id;
     Position position;
 
 public:
-    PlayerMovedEvent(const bomb_id_t &_bomb_id, const Position &_position) :
-            Event(PLAYER_MOVED_EVENT_ID), bomb_id(_bomb_id), position(_position) {}
+    PlayerMovedEvent(const player_id_t &_player_id, const Position &_position) :
+            Event(PLAYER_MOVED_EVENT_ID), player_id(_player_id), position(_position) {}
 
     std::string serialize() const override;
 };
 
 class BlockPlacedEvent : public Event {
-    static const uint8_t BLOCK_PLACED_EVENT_ID = 0;
+    static const uint8_t BLOCK_PLACED_EVENT_ID = 3;
     Position position;
 
 public:
