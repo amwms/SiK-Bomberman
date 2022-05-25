@@ -31,7 +31,7 @@ void ClientGameState::reset_turn_data() {
 }
 
 template<class T>
-ListSerializer<T> cast_set_to_list(auto &to_cast) {
+ListSerializer<T> cast_set_to_list(std::set<T> &to_cast) {
     std::vector<T> list;
 
     for (auto &el : to_cast) {

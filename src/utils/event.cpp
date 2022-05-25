@@ -1,4 +1,3 @@
-#include <iostream>
 #include "event.h"
 
 std::string BombPlacedEvent::serialize() const {
@@ -28,7 +27,7 @@ std::string BombExplodedEvent::serialize() const {
 
 bool out_of_bounds(ClientGameState &game_state, Position &position) {
     return position.get_x() >= game_state.size_x.get_num()
-        && position.get_y() >= game_state.size_y.get_num();
+        || position.get_y() >= game_state.size_y.get_num();
 }
 
 void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
@@ -46,10 +45,14 @@ void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
 
         if (!out_of_bounds(game_state, current_position))
             game_state.explosions.insert(current_position);
+
+        radius++;
     }
 
     // down from bomb
     current_position = start_position;
+    radius = 0;
+
     while (game_state.blocks.find(current_position) == game_state.blocks.end()
            && !out_of_bounds(game_state, current_position)
            && radius < game_state.explosion_radius.get_num()) {
@@ -57,10 +60,14 @@ void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
 
         if (!out_of_bounds(game_state, current_position))
             game_state.explosions.insert(current_position);
+
+        radius++;
     }
 
     // left from bomb
     current_position = start_position;
+    radius = 0;
+
     while (game_state.blocks.find(current_position) == game_state.blocks.end()
            && !out_of_bounds(game_state, current_position)
            && radius < game_state.explosion_radius.get_num()) {
@@ -68,10 +75,14 @@ void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
 
         if (!out_of_bounds(game_state, current_position))
             game_state.explosions.insert(current_position);
+
+        radius++;
     }
 
     // right from bomb
     current_position = start_position;
+    radius = 0;
+
     while (game_state.blocks.find(current_position) == game_state.blocks.end()
            && !out_of_bounds(game_state, current_position)
            && radius < game_state.explosion_radius.get_num()) {
@@ -79,6 +90,8 @@ void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
 
         if (!out_of_bounds(game_state, current_position))
             game_state.explosions.insert(current_position);
+
+        radius++;
     }
 }
 
