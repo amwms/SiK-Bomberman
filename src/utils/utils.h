@@ -54,11 +54,9 @@ public:
 
     std::string serialize() const override;
 
-    void setTimer(const UINT16Serializer &timer);
+    void dec_timer();
 
-    const Position &getPosition() const;
-
-    const UINT16Serializer &getTimer() const;
+    const Position &get_position() const;
 };
 
 class Direction : public Serializer {

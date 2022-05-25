@@ -33,7 +33,7 @@ bool out_of_bounds(ClientGameState &game_state, Position &position) {
 }
 
 void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
-    Position start_position = game_state.bombs.at(bomb_id).getPosition();
+    Position start_position = game_state.bombs.at(bomb_id).get_position();
 
     // up from
     Position current_position = start_position;

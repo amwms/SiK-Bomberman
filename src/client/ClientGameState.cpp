@@ -1,20 +1,27 @@
 #include "ClientGameState.h"
 
-void update_players(ClientGameState &game_state){
+static void update_players(ClientGameState &game_state){
     for (auto &player_id : game_state.robots_destroyed_in_turn) {
         game_state.scores.get_map().at(player_id).get_num()++;
     }
 }
 
-void update_blocks(ClientGameState &game_state){
+static void update_blocks(ClientGameState &game_state){
     for (auto &el : game_state.blocks_destroyed_in_turn) {
         game_state.blocks.erase(el);
+    }
+}
+
+static void update_bomb_timers(ClientGameState &game_state) {
+    for (auto &[key, bomb] : game_state.bombs) {
+        bomb.dec_timer();
     }
 }
 
 void ClientGameState::update_after_turn() {
     update_blocks(*this);
     update_players(*this);
+    update_bomb_timers(*this);
 }
 
 void ClientGameState::reset_turn_data() {

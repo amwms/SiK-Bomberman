@@ -51,16 +51,12 @@ std::string Bomb::serialize() const {
     return result;
 }
 
-const Position &Bomb::getPosition() const {
+const Position &Bomb::get_position() const {
     return position;
 }
 
-const UINT16Serializer &Bomb::getTimer() const {
-    return timer;
-}
-
-void Bomb::setTimer(const UINT16Serializer &_timer) {
-    Bomb::timer = _timer;
+void Bomb::dec_timer() {
+    timer.get_num()--;
 }
 
 std::string Direction::serialize() const {
