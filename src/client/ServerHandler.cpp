@@ -26,22 +26,32 @@ void handle_accepted_player_message(ServerConnector &server_connector, ClientGam
     game_state.add_players(accepted_player_message.get_player_id(), accepted_player_message.get_player());
 }
 
-void game_started_message(ServerConnector &server_connector, ClientGameState &game_state) {
+void handle_game_started_message(ServerConnector &server_connector, ClientGameState &game_state) {
     GameStartedMessage game_started_message = tcp_deserialize_to_game_started_message(server_connector);
 
     game_state.set_players(game_started_message.get_players());
+    game_state.set_is_in_lobby(false);
 }
 
-void turn_message(TurnMessage &turn_message, ClientGameState &game_state) {
+void handle_turn_message(ServerConnector &server_connector, ClientGameState &game_state) {
+    TurnMessage turn_message = tcp_deserialize_to_turn_message(server_connector);
+
     game_state.set_turn(turn_message.get_turn());
     game_state.set_events(turn_message.get_events());
 }
 
-void ServerHandler::handle() {
-    std::string message = server_connector.receive_message(1);
-    assert(message.size() == 1);
+void handle_game_ended_message(ServerConnector &server_connector, ClientGameState &game_state) {
+    GameEndedMessage game_ended_message = tcp_deserialize_to_game_ended_message(server_connector);
 
-    switch (message[0]) {
+    game_state.set_scores(game_ended_message.getScores());
+    game_state.set_is_in_lobby(true);
+}
+
+void ServerHandler::handle() {
+    std::string message_id = server_connector.receive_message(1);
+    assert(message_id.size() == 1);
+
+    switch (message_id[0]) {
         case HELLO:
             handle_hello_message(server_connector, game_state);
             break;
@@ -49,11 +59,14 @@ void ServerHandler::handle() {
             handle_accepted_player_message(server_connector, game_state);
             break;
         case GAME_STARTED:
-
+            handle_game_started_message(server_connector, game_state);
+            break;
         case TURN:
-
+            handle_turn_message(server_connector, game_state);
+            break;
         case GAME_ENDED:
-
+            handle_game_ended_message(server_connector, game_state);
+            break;
         default:
             throw DeserializationException{};
     }

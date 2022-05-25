@@ -96,7 +96,7 @@ public:
 template <class T>
 requires std::derived_from<T, Serializer>
 class MapSerializer : public Serializer {
-    using key_t = UINT8Serializer;//uint8_t;
+    using key_t = UINT8Serializer;
     std::map<key_t, T> map;
 
 public:
@@ -110,7 +110,6 @@ public:
         std::string result{buffer, 4};
         for (auto &[key, value] : map) {
             result += key.serialize();
-            // this is type uint8_t so it is already serialized
             result += value.serialize();
         }
 
