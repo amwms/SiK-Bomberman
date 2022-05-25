@@ -33,33 +33,13 @@ void print_input_arguments(po::variables_map &map) {
 }
 
 port_t get_port_from_address(const address_t &address) {
-    size_t len = address.size();
-    size_t i = 0;
-
-    while (address[i] != ':') {
-        i++;
-    }
-    i++; // next char after ':'
-
-    std::string res;
-    while (i < len) {
-        res += address[i++];
-    }
-
-    auto port = static_cast<port_t>(std::stoi(res));
-
-    return port;
+    size_t last_colon = address.find_last_of(':');
+    return static_cast<port_t>(std::stoi(address.substr(last_colon + 1)));
 }
 
 std::string get_address_from_address(const address_t &address) {
-    size_t i = 0;
-
-    std::string res;
-    while (address[i] != ':') {
-        res += address[i++];
-    }
-
-    return res;
+    size_t last_colon = address.find_last_of(':');
+    return address.substr(0, last_colon);
 }
 
 Arguments convert_parameters(po::variables_map &map) {

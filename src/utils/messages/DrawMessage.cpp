@@ -5,7 +5,7 @@ std::string LobbyMessage::serialize() const {
 
     result += static_cast<char>(message_id);
     result += server_name.serialize();
-    result += static_cast<char>(players_count);
+    result += players_count.serialize();
     result += size_x.serialize();
     result += size_y.serialize();
     result += game_length.serialize();

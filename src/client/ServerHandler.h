@@ -11,6 +11,7 @@ class ServerHandler {
     GuiConnector &gui_connector;
 
     void handle();
+    void send_message_to_gui();
 
 public:
     ServerHandler(ServerConnector &_server_connector, GuiConnector &_gui_connector,

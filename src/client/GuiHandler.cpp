@@ -8,16 +8,17 @@ void GuiHandler::handle() {
             std::string message_from_gui = gui_connector.receive_message();
             std::shared_ptr<InputMessage> input_message = string_to_input_message(message_from_gui);
 
-            if (game_state.is_in_lobby()) {
+            if (game_state.in_lobby) {
                 JoinServer message{name.get_string()};
                 server_connector.send_message(message.serialize());
-            } else {
+            }
+            else {
                 pass_from_gui_to_server(input_message, server_connector);
             }
         }
     }
     catch (std::exception &exception) {
-
+    //TODO - stop main from waiting on conditional variable
     }
 }
 

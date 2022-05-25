@@ -84,7 +84,7 @@ void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
 }
 
 void BombExplodedEvent::handle(ClientGameState &game_state) {
-    game_state.bombs_exploded.insert(bomb_id);
+    game_state.bombs.erase(bomb_id);
 
     for (auto &robot : robots_destroyed.get_list()) {
         game_state.robots_destroyed_in_turn.insert(robot);

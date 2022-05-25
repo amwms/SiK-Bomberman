@@ -1,4 +1,5 @@
 #include "deserialization.h"
+#include "boost/endian/conversion.hpp"
 
 StringSerializer string_to_string_serializer(std::string &string) {
     return {string};
@@ -43,14 +44,14 @@ UINT16Serializer tcp_deserialize_to_uint16_serializer(ServerConnector &server_co
     std::string number = server_connector.receive_message(2);
     assert(number.size() == 2);
 
-    return {*((uint16_t*) number.data())};
+    return {boost::endian::big_to_native(*((uint16_t*) number.data()))};
 }
 
 UINT32Serializer tcp_deserialize_to_uint32_serializer(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(4);
     assert(number.size() == 4);
 
-    return {*((uint32_t*) number.data())};
+    return {boost::endian::big_to_native(*((uint32_t*) number.data()))};
 }
 
 Player tcp_deserialize_to_player_serializer(ServerConnector &server_connector) {
@@ -70,7 +71,7 @@ Position tcp_deserialize_to_position_serializer (ServerConnector &server_connect
 MapSerializer<Player> tcp_deserialize_to_player_map_serializer(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(4);
     assert(number.size() == 4);
-    uint32_t true_number = {*((uint32_t*) number.data())};
+    uint32_t true_number = boost::endian::big_to_native(*((uint32_t*) number.data()));
 
     std::map<UINT8Serializer, Player> map;
 
@@ -87,7 +88,7 @@ MapSerializer<Player> tcp_deserialize_to_player_map_serializer(ServerConnector &
 MapSerializer<UINT32Serializer> tcp_deserialize_to_uint32_map_serializer(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(4);
     assert(number.size() == 4);
-    uint32_t true_number = {*((uint32_t*) number.data())};
+    uint32_t true_number = boost::endian::big_to_native(*((uint32_t*) number.data()));
 
     std::map<UINT8Serializer, UINT32Serializer> map;
 
@@ -104,7 +105,7 @@ MapSerializer<UINT32Serializer> tcp_deserialize_to_uint32_map_serializer(ServerC
 ListSerializer<UINT8Serializer> tcp_deserialize_to_uint8_list_serializer(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(4);
     assert(number.size() == 4);
-    uint32_t true_number = {*((uint32_t*) number.data())};
+    uint32_t true_number = boost::endian::big_to_native(*((uint32_t*) number.data()));
 
     std::vector<UINT8Serializer> list;
 
@@ -119,7 +120,7 @@ ListSerializer<UINT8Serializer> tcp_deserialize_to_uint8_list_serializer(ServerC
 ListSerializer<Position> tcp_deserialize_to_position_list_serializer(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(4);
     assert(number.size() == 4);
-    uint32_t true_number = {*((uint32_t*) number.data())};
+    uint32_t true_number = boost::endian::big_to_native(*((uint32_t*) number.data()));
 
     std::vector<Position> list;
 
@@ -181,7 +182,7 @@ std::shared_ptr<Event> tcp_deserialize_to_event_message(ServerConnector &server_
 std::vector<std::shared_ptr<Event>> tcp_deserialize_to_event_vector(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(4);
     assert(number.size() == 4);
-    uint32_t true_number = {*((uint32_t*) number.data())};
+    uint32_t true_number = boost::endian::big_to_native(*((uint32_t*) number.data()));
 
     std::vector<std::shared_ptr<Event>> list;
 
