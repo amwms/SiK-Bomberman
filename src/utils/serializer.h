@@ -33,7 +33,7 @@ public:
 
     std::string serialize() const override;
 
-    uint8_t get_num() const {
+    uint8_t &get_num() {
         return num;
     }
 
@@ -50,12 +50,16 @@ public:
 
     std::string serialize() const override;
 
-    uint16_t get_num() const {
+    uint16_t &get_num() {
         return num;
     }
 
     bool operator< (const UINT16Serializer &a) const {
         return this->num < a.num;
+    }
+
+    bool operator== (const UINT16Serializer &a) const {
+        return this->num == a.num;
     }
 };
 
@@ -67,7 +71,7 @@ public:
 
     std::string serialize() const override;
 
-    uint32_t get_num() const {
+    uint32_t &get_num() {
         return num;
     }
 

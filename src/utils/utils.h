@@ -27,6 +27,21 @@ public:
     Position(UINT16Serializer &_x, UINT16Serializer &_y) : x(_x), y(_y) {}
 
     std::string serialize() const override;
+
+    void inc_x();
+    void inc_y();
+    void dec_x();
+    void dec_y();
+
+    uint16_t get_x();
+    uint16_t get_y();
+
+    bool operator< (const Position &p) const {
+        if (this->x == p.x)
+            return this->y < p.y;
+
+        return this->x < p.x;
+    }
 };
 
 class Bomb : public Serializer {
@@ -35,8 +50,15 @@ class Bomb : public Serializer {
 
 public:
     Bomb(const Position &_position, uint16_t _timer) : position(_position), timer(_timer) {}
+    Bomb(const Position &_position, const UINT16Serializer &_timer) : position(_position), timer(_timer) {}
 
     std::string serialize() const override;
+
+    void setTimer(const UINT16Serializer &timer);
+
+    const Position &getPosition() const;
+
+    const UINT16Serializer &getTimer() const;
 };
 
 class Direction : public Serializer {
