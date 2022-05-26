@@ -33,7 +33,7 @@ public:
 
     std::string serialize() const override;
 
-    uint8_t &get_num() {
+    [[maybe_unused]] uint8_t &get_num() {
         return num;
     }
 

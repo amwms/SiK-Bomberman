@@ -2,7 +2,7 @@
 #include "GuiHandler.h"
 #include "../utils/deserialization.h"
 
-size_t pass_from_gui_to_server(std::shared_ptr<InputMessage> &input_message, ServerConnector &connector) {
+static size_t pass_from_gui_to_server(std::shared_ptr<InputMessage> &input_message, ServerConnector &connector) {
     std::shared_ptr<ClientMessage> client_message = input_message->to_client_message();
     connector.send_message(client_message->serialize());
 

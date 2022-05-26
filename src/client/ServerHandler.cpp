@@ -70,7 +70,7 @@ static void handle_turn_message(ServerConnector &server_connector, ClientGameSta
 static void handle_game_ended_message(ServerConnector &server_connector, ClientGameState &game_state) {
     GameEndedMessage game_ended_message = tcp_deserialize_to_game_ended_message(server_connector);
 
-    game_state.scores = game_ended_message.getScores();
+    game_state.scores = game_ended_message.get_scores();
     game_state.in_lobby = true;
     game_state.should_send_update_to_gui = true;
 }

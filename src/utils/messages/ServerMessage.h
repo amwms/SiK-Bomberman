@@ -126,7 +126,7 @@ public:
 
     std::string serialize() const override;
 
-    MapSerializer<score_t> &getScores();
+    MapSerializer<score_t> &get_scores();
 };
 
 #endif //SIK_BOMBERMAN_SERVERMESSAGE_H

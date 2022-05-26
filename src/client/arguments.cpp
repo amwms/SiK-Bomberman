@@ -129,27 +129,27 @@ ArgumentsBuilder ArgumentsBuilder::setGuiAddress(const std::string &guiAddress) 
     return *this;
 }
 
-const std::string &Arguments::getPlayerName() const {
+const std::string &Arguments::get_player_name() const {
     return player_name;
 }
 
-port_t Arguments::getGuiPort() const {
+port_t Arguments::get_gui_port() const {
     return gui_port;
 }
 
-port_t Arguments::getClientPort() const {
+port_t Arguments::get_client_port() const {
     return client_port;
 }
 
-port_t Arguments::getServerPort() const {
+port_t Arguments::get_server_port() const {
     return server_port;
 }
 
-const std::string &Arguments::getServerAddress() const {
+const std::string &Arguments::get_server_address() const {
     return server_address;
 }
 
-const std::string &Arguments::getGuiAddress() const {
+const std::string &Arguments::get_gui_address() const {
     return gui_address;
 }
 

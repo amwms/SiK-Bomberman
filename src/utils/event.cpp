@@ -25,12 +25,12 @@ std::string BombExplodedEvent::serialize() const {
     return result;
 }
 
-bool out_of_bounds(ClientGameState &game_state, Position &position) {
+static bool out_of_bounds(ClientGameState &game_state, Position &position) {
     return position.get_x() >= game_state.size_x.get_num()
         || position.get_y() >= game_state.size_y.get_num();
 }
 
-void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
+static void count_explosions(ClientGameState &game_state, bomb_id_t &bomb_id) {
     Position start_position = game_state.bombs.at(bomb_id).get_position();
 
     // up from

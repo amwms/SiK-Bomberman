@@ -29,12 +29,12 @@ int main(int argc, char *argv[]) {
 
         // set needed variables for network implementation
         boost::asio::io_context io_context;
-        GuiConnector gui_connector{io_context, arguments.getGuiAddress(), arguments.getGuiPort(),
-                                   arguments.getClientPort()};
-        ServerConnector server_connector{io_context, arguments.getServerAddress(), arguments.getServerPort()};
+        GuiConnector gui_connector{io_context, arguments.get_gui_address(), arguments.get_gui_port(),
+                                   arguments.get_client_port()};
+        ServerConnector server_connector{io_context, arguments.get_server_address(), arguments.get_server_port()};
         ClientGameState game_state{};
 
-        GuiHandler gui_handler{server_connector, gui_connector, game_state, arguments.getPlayerName(), thread_callback};
+        GuiHandler gui_handler{server_connector, gui_connector, game_state, arguments.get_player_name(), thread_callback};
         ServerHandler server_handler{server_connector, gui_connector, game_state, thread_callback};
 
         std::thread gui_handler_thread(gui_handler);
