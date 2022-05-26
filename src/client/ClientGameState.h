@@ -41,6 +41,8 @@ public:
 
     void reset_turn_data();
 
+    void update_bomb_timers();
+
     LobbyMessage to_lobby_massage();
 
     GameMessage to_game_message();

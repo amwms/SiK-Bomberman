@@ -12,8 +12,8 @@ static void update_blocks(ClientGameState &game_state){
     }
 }
 
-static void update_bomb_timers(ClientGameState &game_state) {
-    for (auto &[key, bomb] : game_state.bombs) {
+void ClientGameState::update_bomb_timers() {
+    for (auto &[key, bomb] : bombs) {
         bomb.dec_timer();
     }
 }
@@ -21,7 +21,6 @@ static void update_bomb_timers(ClientGameState &game_state) {
 void ClientGameState::update_after_turn() {
     update_blocks(*this);
     update_players(*this);
-    update_bomb_timers(*this);
 }
 
 void ClientGameState::reset_turn_data() {

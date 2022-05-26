@@ -2,7 +2,6 @@
 #include <iostream>
 #include "../utils/messages/ServerMessage.h"
 #include "../utils/deserialization.h"
-#include "../utils/messages/DrawMessage.h"
 
 #define HELLO 0
 #define ACCEPTED_PLAYER 1
@@ -116,6 +115,7 @@ void ServerHandler::handle() {
     game_state.update_after_turn();
     send_message_to_gui();
     game_state.reset_turn_data();
+    game_state.update_bomb_timers();
 }
 
 void ServerHandler::operator()() {
