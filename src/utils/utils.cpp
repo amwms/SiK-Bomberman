@@ -42,6 +42,13 @@ uint16_t Position::get_y() {
     return y.get_num();
 }
 
+bool Position::operator<(const Position &p) const  {
+    if (this->x == p.x)
+        return this->y < p.y;
+
+    return this->x < p.x;
+}
+
 std::string Bomb::serialize() const {
     std::string result;
 

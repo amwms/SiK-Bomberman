@@ -36,12 +36,7 @@ public:
     uint16_t get_x();
     uint16_t get_y();
 
-    bool operator< (const Position &p) const {
-        if (this->x == p.x)
-            return this->y < p.y;
-
-        return this->x < p.x;
-    }
+    bool operator< (const Position &p) const;
 };
 
 class Bomb : public Serializer {

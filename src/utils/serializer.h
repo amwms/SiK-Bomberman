@@ -20,9 +20,7 @@ public:
 
     std::string serialize() const override;
 
-    std::string get_string() const {
-        return string;
-    }
+    std::string get_string() const;
 };
 
 class UINT8Serializer : public Serializer {
@@ -33,13 +31,9 @@ public:
 
     std::string serialize() const override;
 
-    [[maybe_unused]] uint8_t &get_num() {
-        return num;
-    }
+    [[maybe_unused]] uint8_t &get_num();
 
-    bool operator< (const UINT8Serializer &a) const {
-        return this->num < a.num;
-    }
+    bool operator< (const UINT8Serializer &a) const;
 };
 
 class UINT16Serializer : public Serializer {
@@ -54,13 +48,9 @@ public:
         return num;
     }
 
-    bool operator< (const UINT16Serializer &a) const {
-        return this->num < a.num;
-    }
+    bool operator< (const UINT16Serializer &a) const;
 
-    bool operator== (const UINT16Serializer &a) const {
-        return this->num == a.num;
-    }
+    bool operator== (const UINT16Serializer &a) const;
 };
 
 class UINT32Serializer : public Serializer {
@@ -71,13 +61,9 @@ public:
 
     std::string serialize() const override;
 
-    uint32_t &get_num() {
-        return num;
-    }
+    uint32_t &get_num();
 
-    bool operator< (const UINT32Serializer &a) const {
-        return this->num < a.num;
-    }
+    bool operator< (const UINT32Serializer &a) const;
 };
 
 template <class T>
