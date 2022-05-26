@@ -20,6 +20,7 @@ public:
         tcp::resolver resolver(io_context);
         tcp::resolver::results_type endpoints = resolver.resolve(_address, std::to_string(_server_port));
         boost::asio::connect(socket, endpoints);
+        socket.set_option(boost::asio::ip::tcp::no_delay{true});
     }
 
     void send_message(const std::string &buffer);
