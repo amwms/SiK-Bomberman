@@ -20,29 +20,29 @@ using address_t = std::string;
 #define PORT "port"
 #define SERVER_ADDRESS "server-address"
 
-void print_exit(auto &message) {
+static void print_exit(auto &message) {
     std::cout << message << "\n";
     exit(1);
 }
 
-void print_input_arguments(po::variables_map &map) {
+[[maybe_unused]] static void print_input_arguments(po::variables_map &map) {
     std::cout << GUI_ADDRESS" was set to: " << map[GUI_ADDRESS].as<std::string>() << "\n";
     std::cout << PLAYER_NAME" was set to: " << map[PLAYER_NAME].as<std::string>() << "\n";
     std::cout << PORT" was set to: " << map[PORT].as<port_t>() << "\n";
     std::cout << SERVER_ADDRESS" was set to: " << map[SERVER_ADDRESS].as<std::string>() << "\n";
 }
 
-port_t get_port_from_address(const address_t &address) {
+static port_t get_port_from_address(const address_t &address) {
     size_t last_colon = address.find_last_of(':');
     return static_cast<port_t>(std::stoi(address.substr(last_colon + 1)));
 }
 
-std::string get_address_from_address(const address_t &address) {
+static std::string get_address_from_address(const address_t &address) {
     size_t last_colon = address.find_last_of(':');
     return address.substr(0, last_colon);
 }
 
-Arguments convert_parameters(po::variables_map &map) {
+static Arguments convert_parameters(po::variables_map &map) {
     ArgumentsBuilder args = ArgumentsBuilder();
     args = args.setPlayerName(map[PLAYER_NAME].as<std::string>())
             .setClientPort(map[PORT].as<port_t>())
@@ -55,7 +55,7 @@ Arguments convert_parameters(po::variables_map &map) {
 }
 
 Arguments parse_arguments(int argc, char *argv[]) {
-    // Declare the supported options.
+    // declare the supported options
     po::options_description desc("Program options");
     po::positional_options_description p;
     p.add("redundant", -1);
@@ -91,8 +91,6 @@ Arguments parse_arguments(int argc, char *argv[]) {
         std::cerr << exception.what() << std::endl;
         exit(1);
     }
-
-    print_input_arguments(variables_map);
 
     return convert_parameters(variables_map);
 }
