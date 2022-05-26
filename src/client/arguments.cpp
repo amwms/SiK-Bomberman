@@ -87,8 +87,8 @@ Arguments parse_arguments(int argc, char *argv[]) {
             __builtin_unreachable();
         }
     }
-    catch (const po::error &except) {
-        std::cerr << except.what() << '\n';
+    catch (const po::error &exception) {
+        std::cerr << exception.what() << std::endl;
         exit(1);
     }
 
