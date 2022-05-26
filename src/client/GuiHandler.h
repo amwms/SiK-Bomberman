@@ -12,6 +12,7 @@ class GuiHandler {
     ServerConnector &server_connector;
     GuiConnector &gui_connector;
     StringSerializer name;
+    std::function<void(void)> callback_function;
 
     void handle();
 
@@ -19,8 +20,11 @@ public:
     GuiHandler(ServerConnector &_server_connector,
                GuiConnector &_gui_connector,
                ClientGameState &_game_state,
-               const std::string &_name) : game_state(_game_state), server_connector(_server_connector),
-                                         gui_connector(_gui_connector), name(_name) {}
+               const std::string &_name,
+               std::function<void(void)> &_callback_function) : game_state(_game_state),
+                                                                server_connector(_server_connector),
+                                                                gui_connector(_gui_connector), name(_name),
+                                                                callback_function(_callback_function) {}
 
     void operator()();
 };

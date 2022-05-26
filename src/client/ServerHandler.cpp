@@ -126,6 +126,6 @@ void ServerHandler::operator()() {
     }
     catch (std::exception &exception) {
         std::cerr << exception.what() << std::endl;
-        exit(1);
+        callback_function();
     }
 }
