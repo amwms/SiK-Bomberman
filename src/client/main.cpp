@@ -4,7 +4,6 @@
 #include "../utils/utils.h"
 #include "../utils/messages/DrawMessage.h"
 #include "GuiConnector.h"
-#include "client_connections.h"
 #include "GuiHandler.h"
 #include "ServerHandler.h"
 
