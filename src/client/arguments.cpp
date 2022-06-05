@@ -21,7 +21,7 @@ using address_t = std::string;
 #define SERVER_ADDRESS "server-address"
 
 static void print_exit(auto &message) {
-    std::cout << message << "\n";
+    std::cerr << message << "\n";
     exit(1);
 }
 
