@@ -1,6 +1,7 @@
 #include "ServerArguments.h"
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <chrono>
 
 namespace po = boost::program_options;
 
@@ -37,6 +38,14 @@ static void print_exit(auto &message) {
 }
 
 static ServerArguments create_arguments_from_map(po::variables_map &variables_map) {
+    uint32_t seed;
+    if (variables_map.find(SEED) == variables_map.end()) {
+        seed = (uint32_t) std::chrono::system_clock::now().time_since_epoch().count();
+    }
+    else {
+        seed = variables_map[SEED].as<uint32_t>();
+    }
+
     return ServerArguments{variables_map[BOMB_TIMER].as<uint16_t>(),
                            variables_map[PLAYERS_COUNT].as<uint8_t>(),
                            variables_map[TURN_DURATION].as<uint64_t>(),
@@ -45,7 +54,7 @@ static ServerArguments create_arguments_from_map(po::variables_map &variables_ma
                            variables_map[GAME_LENGTH].as<uint16_t>(),
                            variables_map[SERVER_NAME].as<std::string>(),
                            variables_map[PORT].as<uint16_t>(),
-                           variables_map[SEED].as<uint32_t>(),
+                           seed,
                            variables_map[SIZE_X].as<uint16_t>(),
                            variables_map[SIZE_Y].as<uint16_t>()};
 }
