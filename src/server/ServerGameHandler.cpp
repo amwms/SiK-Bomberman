@@ -188,6 +188,7 @@ void ServerGameHandler::send_message(TurnMessage &message) {
 }
 
 void ServerGameHandler::handle_game_turn() {
+    std::unique_lock lock{game_state.mutex};
     game_state.update_bomb_timers();
 
     std::vector<std::shared_ptr<Event>> events;

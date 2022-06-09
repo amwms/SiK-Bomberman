@@ -3,6 +3,7 @@
 
 #include <set>
 #include <variant>
+#include <shared_mutex>
 #include "../utils/serializer.h"
 #include "../utils/utils.h"
 #include "../utils/messages/ClientMessage.h"
@@ -45,7 +46,8 @@ public:
     std::set<Position> blocks_destroyed_in_turn;
     std::set<player_id_t> robots_destroyed_in_turn;
 
-    // players actions vector - for each turn
+    // players' actions vector - for each turn
+    std::shared_mutex mutex;
     std::map<player_id_t, std::variant<PlaceBombServer, PlaceBlockServer, MoveServer>> client_turn_action;
 
     ServerGameState(RandomNumberGenerator &_randomizer, uint8_t _players_count, uint16_t _size_x,
