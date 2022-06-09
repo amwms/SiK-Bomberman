@@ -49,6 +49,8 @@ public:
 
     std::string serialize() const override;
 
+    uint16_t get_timer();
+
     void dec_timer();
 
     const Position &get_position() const;
@@ -61,6 +63,8 @@ public:
     Direction(uint8_t _direction_id) : direction_id(_direction_id) {}
 
     std::string serialize() const override;
+
+    uint8_t get_direction_id();
 };
 
 #endif //SIK_BOMBERMAN_UTILS_H

@@ -66,6 +66,14 @@ void Bomb::dec_timer() {
     timer.get_num()--;
 }
 
+uint16_t Bomb::get_timer() {
+    return timer.get_num();
+}
+
 std::string Direction::serialize() const {
     return std::string{static_cast<char>(direction_id)};
+}
+
+uint8_t Direction::get_direction_id() {
+    return direction_id;
 }

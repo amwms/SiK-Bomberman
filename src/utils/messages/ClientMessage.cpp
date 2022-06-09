@@ -4,6 +4,10 @@ std::string ClientMessage::serialize() const {
     return std::string{static_cast<char>(message_id)};
 }
 
+uint8_t ClientMessage::get_message_id() {
+    return message_id;
+}
+
 std::string JoinServer::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += name.serialize();
@@ -16,4 +20,8 @@ std::string MoveServer::serialize() const {
     result += direction.serialize();
 
     return result;
+}
+
+const Direction &MoveServer::get_direction() const {
+    return direction;
 }

@@ -12,6 +12,8 @@ public:
     ClientMessage(uint8_t _message_id) : message_id(_message_id) {}
 
     std::string serialize() const override;
+
+    uint8_t get_message_id();
 };
 
 class JoinServer: public ClientMessage {
@@ -20,6 +22,7 @@ class JoinServer: public ClientMessage {
 
 public:
     JoinServer(const std::string &_name) : ClientMessage(JOIN_SERVER_MESSAGE_ID), name(_name) {}
+    JoinServer(const StringSerializer &_name) : ClientMessage(JOIN_SERVER_MESSAGE_ID), name(_name) {}
 
     std::string serialize() const override;
 };
@@ -47,6 +50,8 @@ public:
     MoveServer(Direction &_direction) : ClientMessage(MOVE_MESSAGE_ID), direction(_direction) {}
 
     std::string serialize() const override;
+
+    const Direction &get_direction() const;
 };
 
 
