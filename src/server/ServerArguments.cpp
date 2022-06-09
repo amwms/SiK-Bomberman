@@ -34,7 +34,6 @@ namespace po = boost::program_options;
 
 static void print_exit(auto &message) {
     std::cerr << message << "\n";
-    exit(1);
 }
 
 static ServerArguments create_arguments_from_map(po::variables_map &variables_map) {
@@ -87,6 +86,7 @@ ServerArguments parse_server_arguments(int argc, char *argv[]) {
         // if the help argument was given then show help options of the program
         if (variables_map.count("help")) {
             print_exit(desc);
+            exit(0);
             __builtin_unreachable();
         }
 
@@ -94,6 +94,7 @@ ServerArguments parse_server_arguments(int argc, char *argv[]) {
 
         if (variables_map.count("redundant")) {
             print_exit("Wrong arguments - call -h (--help) for correct program options.\n");
+            exit(1);
             __builtin_unreachable();
         }
     }
