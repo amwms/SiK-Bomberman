@@ -3,29 +3,37 @@
 
 #include <queue>
 #include <mutex>
+#include <shared_mutex>
 
 template <class T>
 class ConcurrentQueue {
     std::queue<T> queue;
-    std::mutex mutex;
+    std::shared_mutex mutex;
 
 public:
     ConcurrentQueue() : queue(), mutex() {}
 
     void push(T element) {
-        mutex.lock();
+        std::unique_lock lock{mutex};
         queue.push(element);
-        mutex.unlock();
     }
 
     T pop() {
-        T result;
-
-        mutex.lock();
-        result = queue.pop();
-        mutex.unlock();
+        std::unique_lock lock{mutex};
+        T result = queue.front();
+        queue.pop();
 
         return result;
+    }
+
+    size_t get_size() {
+        std::shared_lock lock{mutex};
+        return queue.size();
+    }
+
+    bool is_empty() {
+        std::shared_lock lock{mutex};
+        return queue.empty();
     }
 };
 
