@@ -214,13 +214,13 @@ action_t ServerGameHandler::get_last_action_in_queue(client_receiving_queue_t &r
     return action;
 }
 
-void ServerGameHandler::lock_all_queues_in_player_clients() {
+void ServerGameHandler::lock_all_receiving_queues_in_player_clients() {
     for (auto &client_handler : client_handlers) {
         client_handler->client_receiving_queue->lock_queue();
     }
 }
 
-void ServerGameHandler::unlock_all_queues_in_player_clients() {
+void ServerGameHandler::unlock_all_receiving_queues_in_player_clients() {
     for (auto &client_handler : client_handlers) {
         client_handler->client_receiving_queue->unlock_queue();
     }
@@ -233,7 +233,7 @@ void ServerGameHandler::send_message(const std::basic_string<char> &message) {
 }
 
 void ServerGameHandler::handle_game_turn() {
-    lock_all_queues_in_player_clients();
+    lock_all_receiving_queues_in_player_clients();
     game_state.update_bomb_timers();
 
     std::vector<std::shared_ptr<Event>> events;
@@ -259,7 +259,7 @@ void ServerGameHandler::handle_game_turn() {
     }
 
     clean_all_client_queues();
-    unlock_all_queues_in_player_clients();
+    unlock_all_receiving_queues_in_player_clients();
 
     TurnMessage turn_message{game_state.turn_number, events};
 
@@ -310,6 +310,8 @@ void ServerGameHandler::handle_new_joins() {
                         [&](MoveServer &action) { ignore_action(action); },
                 }, message);
             }
+
+            client_handler->client_receiving_queue->unlock_queue();
         }
     }
 }
@@ -361,9 +363,9 @@ void ServerGameHandler::operator()() {
             }
 
             // TODO -??
-            lock_all_queues_in_player_clients();
+            lock_all_receiving_queues_in_player_clients();
             clean_all_client_queues();
-            unlock_all_queues_in_player_clients();
+            unlock_all_receiving_queues_in_player_clients();
         }
     }
     catch (std::exception &exception) {

@@ -45,8 +45,14 @@ static ServerArguments create_arguments_from_map(po::variables_map &variables_ma
         seed = variables_map[SEED].as<uint32_t>();
     }
 
+    // check if player count is < 256 (uint8_t)
+    uint16_t player_count = variables_map[PLAYERS_COUNT].as<uint16_t>();
+    if (player_count > UINT8_MAX) {
+        throw std::runtime_error("Player count is not type u8");
+    }
+
     return ServerArguments{variables_map[BOMB_TIMER].as<uint16_t>(),
-                           variables_map[PLAYERS_COUNT].as<uint8_t>(),
+                           static_cast<uint8_t>(player_count),
                            variables_map[TURN_DURATION].as<uint64_t>(),
                            variables_map[EXPLOSION_RADIUS].as<uint16_t>(),
                            variables_map[INITIAL_BLOCKS].as<uint16_t>(),
@@ -66,7 +72,7 @@ ServerArguments parse_server_arguments(int argc, char *argv[]) {
 
     desc.add_options()
             (BOMB_TIMER",b", po::value<uint16_t>()->required(), "<u16>")
-            (PLAYERS_COUNT",c", po::value<uint8_t>()->required(), "<u8>")
+            (PLAYERS_COUNT",c", po::value<uint16_t>()->required(), "<u8>")
             (TURN_DURATION",d", po::value<uint64_t>()->required(), "<u64, milisekundy>")
             (EXPLOSION_RADIUS",e", po::value<uint16_t>()->required(), "<u16>")
             (HELP",h", "Wypisuje jak używać programu")

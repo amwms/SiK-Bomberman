@@ -17,9 +17,6 @@ class ClientHandler {
 
     std::optional<player_id_t> player_id;
 
-    std::thread client_receive;
-    std::thread client_send;
-
     void handle_sending();
     void handle_receiving();
 
@@ -28,6 +25,11 @@ public:
     client_sending_queue_t client_sending_queue;
     client_receiving_queue_t client_receiving_queue;
 
+private:
+    std::thread client_receive;
+    std::thread client_send;
+
+public:
     ClientHandler(const std::shared_ptr<ClientConnector> &_client_connector, ServerGameState &_game_state,
                   std::function<void(void)> &_callback_function,
                   client_sending_queue_t _client_sending_queue,
@@ -35,11 +37,11 @@ public:
                     game_state(_game_state),
                     callback_function(_callback_function),
                     player_id(),
-                    client_receive([&]{ handle_receiving(); }),
-                    client_send([&]{ handle_sending(); }),
                     client_connector(_client_connector),
                     client_sending_queue(std::move(_client_sending_queue)),
-                    client_receiving_queue(std::move(_client_receiving_queue)) {}
+                    client_receiving_queue(std::move(_client_receiving_queue)),
+                    client_receive(&ClientHandler::handle_receiving, this),
+                    client_send(&ClientHandler::handle_sending, this) {}
 
     bool is_player();
 

@@ -28,8 +28,8 @@ class ServerGameHandler {
 
     void send_message(const std::basic_string<char> &message);
 
-    void lock_all_queues_in_player_clients();
-    void unlock_all_queues_in_player_clients();
+    void lock_all_receiving_queues_in_player_clients();
+    void unlock_all_receiving_queues_in_player_clients();
 
     void clean_all_client_queues();
     action_t get_last_action_in_queue(client_receiving_queue_t &receiving_queue);
