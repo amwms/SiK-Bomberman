@@ -17,6 +17,7 @@ public:
     // server game settings
     RandomNumberGenerator &randomizer;
 
+    StringSerializer server_name;
     UINT8Serializer players_count;
     UINT16Serializer size_x;
     UINT16Serializer size_y;
@@ -50,11 +51,12 @@ public:
 //    std::shared_mutex mutex;
 //    std::map<player_id_t, std::variant<PlaceBombServer, PlaceBlockServer, MoveServer>> client_turn_action;
 
-    ServerGameState(RandomNumberGenerator &_randomizer, uint8_t _players_count, uint16_t _size_x,
-                    uint16_t _size_y, uint16_t _game_length, uint16_t _explosion_radius, uint16_t _bomb_timer,
-                    uint16_t _initial_blocks_count, uint64_t _turn_duration) :
+    ServerGameState(RandomNumberGenerator &_randomizer, const std::string &_server_name, uint8_t _players_count,
+                    uint16_t _size_x, uint16_t _size_y, uint16_t _game_length, uint16_t _explosion_radius,
+                    uint16_t _bomb_timer, uint16_t _initial_blocks_count, uint64_t _turn_duration) :
                                                       is_lobby(true),
                                                       randomizer(_randomizer),
+                                                      server_name(_server_name),
                                                       players_count(_players_count),
                                                       size_x(_size_x), size_y(_size_y),
                                                       game_length(_game_length),
@@ -74,6 +76,8 @@ public:
     void reset_turn_data();
 
     void update_bomb_timers();
+
+    HelloMessage to_hello_message();
 };
 
 

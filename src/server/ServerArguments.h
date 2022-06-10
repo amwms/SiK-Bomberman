@@ -4,6 +4,7 @@
 #include <string>
 
 class ServerArguments {
+public:
     uint16_t bomb_timer;
     uint8_t players_count;
     uint64_t turn_duration;
@@ -16,7 +17,6 @@ class ServerArguments {
     uint16_t size_x;
     uint16_t size_y;
 
-public:
     ServerArguments(uint16_t _bomb_timer, uint8_t _players_count, uint64_t _turn_duration,
                     uint16_t _explosion_radius, uint16_t _initial_blocks, uint16_t _game_length,
                     const std::string &serverName, uint16_t port, uint32_t seed, uint16_t _size_x,

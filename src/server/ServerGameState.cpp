@@ -58,6 +58,12 @@ std::vector<std::shared_ptr<Event>> ServerGameState::initialize_new_game() {
     return events;
 }
 
+static void update_players(ServerGameState &game_state){
+    for (auto &player_id : game_state.robots_destroyed_in_turn) {
+        game_state.scores.get_map().at(player_id).get_num()++;
+    }
+}
+
 bomb_id_t ServerGameState::get_next_bomb_id() {
     return {current_bomb_id++};
 }
@@ -68,6 +74,7 @@ player_id_t ServerGameState::get_next_player_id() {
 
 void ServerGameState::update_after_turn() {
     turn_number++;
+    update_players(*this);
 }
 
 void ServerGameState::reset_turn_data() {
@@ -80,5 +87,17 @@ void ServerGameState::update_bomb_timers() {
     for (auto &[key, bomb] : bombs) {
         bomb.dec_timer();
     }
+}
+
+HelloMessage ServerGameState::to_hello_message() {
+    return HelloMessage{
+            server_name,
+            players_count,
+            size_x,
+            size_y,
+            game_length,
+            explosion_radius,
+            bomb_timer,
+    };
 }
 

@@ -4,6 +4,8 @@
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
+using namespace std::chrono;
+
 using action_t = std::variant<JoinServer, PlaceBombServer, PlaceBlockServer, MoveServer>;
 
 static bool out_of_bounds(ServerGameState &game_state, Position &position) {
@@ -224,9 +226,9 @@ void ServerGameHandler::unlock_all_queues_in_player_clients() {
     }
 }
 
-void ServerGameHandler::send_message(TurnMessage &message) {
+void ServerGameHandler::send_message(const std::basic_string<char> &message) {
     for (auto &client_handler : client_handlers) {
-        client_handler->client_sending_queue->push(message.serialize());
+        client_handler->client_sending_queue->push(message);
     }
 }
 
@@ -256,10 +258,13 @@ void ServerGameHandler::handle_game_turn() {
         }
     }
 
+    clean_all_client_queues();
+    unlock_all_queues_in_player_clients();
+
     TurnMessage turn_message{game_state.turn_number, events};
 
     game_state.game_turns.push_back(turn_message);
-    send_message(turn_message);
+    send_message(turn_message.serialize());
 
     // update after turn
     for (auto &player_id : game_state.robots_destroyed_in_turn) {
@@ -268,15 +273,97 @@ void ServerGameHandler::handle_game_turn() {
 
     game_state.update_after_turn();
     game_state.reset_turn_data();
-    clean_all_client_queues();
-
-    unlock_all_queues_in_player_clients();
+//    clean_all_client_queues();
+//
+//    unlock_all_queues_in_player_clients();
 }
+
+void ServerGameHandler::handle_join_server(JoinServer &action, ClientHandler &client_handler) {
+    player_id_t new_player_id = game_state.get_next_player_id();
+    std::string address = client_handler.client_connector->get_socket_address();
+    std::string name = action.get_name();
+
+    Player new_player{name, address};
+    game_state.players.get_map().insert({new_player_id, new_player});
+    game_state.current_players_count++;
+
+    client_handler.set_player_id(new_player_id);
+
+    AcceptedPlayerMessage accepted_player_message{new_player_id, new_player};
+    send_message(accepted_player_message.serialize());
+}
+
+void ServerGameHandler::handle_new_joins() {
+    for (auto &client_handler : client_handlers) {
+        if (!client_handler->is_player()) {
+            client_handler->client_receiving_queue->lock_queue();
+            auto queue = client_handler->client_receiving_queue->get_queue_no_mutex();
+
+            if (!queue.empty()) {
+                auto message = queue.front();
+                queue.pop();
+
+                std::visit(overloaded{
+                        [&](JoinServer &action) { handle_join_server(action, *client_handler); },
+                        [&](PlaceBombServer &action) { ignore_action(action); },
+                        [&](PlaceBlockServer &action) { ignore_action(action); },
+                        [&](MoveServer &action) { ignore_action(action); },
+                }, message);
+            }
+        }
+    }
+}
+
+void ServerGameHandler::handle_lobby() {
+    while (game_state.is_lobby && game_state.current_players_count < game_state.players_count.get_num()) {
+        handle_new_joins();
+        sleep(1);
+    }
+
+    game_state.is_lobby = false;
+}
+
+void ServerGameHandler::handle_game() {
+    // GameStarted
+    GameStartedMessage game_started_message{game_state.players};
+    send_message(game_started_message.serialize());
+
+    // Turns
+    auto events = game_state.initialize_new_game();
+    TurnMessage turn_0{0, events};
+    game_state.game_turns.push_back(turn_0);
+    send_message(turn_0.serialize());
+    game_state.update_after_turn();
+    game_state.reset_turn_data();
+
+    uint turn_duration = (uint) game_state.turn_duration / 1000; // TODO - check
+    while (game_state.turn_number <= game_state.game_length.get_num()) {
+        sleep(turn_duration);
+        handle_game_turn();
+    }
+
+    // GameEnded
+    GameEndedMessage game_ended_message{game_state.scores};
+    send_message(game_ended_message.serialize());
+
+    game_state.is_lobby = true;
+}
+
 
 void ServerGameHandler::operator()() {
     try {
         while (true) {
-            handle_game_turn(); // TODO
+            if(game_state.is_lobby) {
+                handle_lobby();
+            }
+            else {
+                handle_game();
+            }
+
+            // TODO -??
+            lock_all_queues_in_player_clients();
+            clean_all_client_queues();
+            unlock_all_queues_in_player_clients();
         }
     }
     catch (std::exception &exception) {

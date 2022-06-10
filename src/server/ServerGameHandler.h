@@ -21,8 +21,12 @@ class ServerGameHandler {
     std::set<std::shared_ptr<ClientHandler>> &client_handlers;
 
     void handle_game_turn();
+    void handle_join_server(JoinServer &action, ClientHandler &client_handler);
+    void handle_new_joins();
+    void handle_game();
+    void handle_lobby();
 
-    void send_message(TurnMessage &message);
+    void send_message(const std::basic_string<char> &message);
 
     void lock_all_queues_in_player_clients();
     void unlock_all_queues_in_player_clients();

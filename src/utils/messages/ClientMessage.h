@@ -25,6 +25,8 @@ public:
     JoinServer(const StringSerializer &_name) : ClientMessage(JOIN_SERVER_MESSAGE_ID), name(_name) {}
 
     std::string serialize() const override;
+
+    std::string get_name();
 };
 
 class PlaceBombServer: public ClientMessage {

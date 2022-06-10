@@ -15,6 +15,10 @@ std::string JoinServer::serialize() const {
     return result;
 }
 
+std::string JoinServer::get_name() {
+    return name.get_string();
+}
+
 std::string MoveServer::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += direction.serialize();
