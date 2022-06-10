@@ -19,8 +19,13 @@ static void handle_welcome_message(ServerGameState &game_state, const std::share
         }
     }
     else {
+        // if client is an observer
         GameStartedMessage game_started_message{game_state.players};
         send_message(game_started_message.serialize(), client_handler);
+
+        for (auto &turn_message : game_state.game_turns) {
+            send_message(turn_message.serialize(), client_handler);
+        }
     }
 }
 
