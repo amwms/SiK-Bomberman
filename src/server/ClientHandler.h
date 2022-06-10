@@ -21,6 +21,8 @@ class ClientHandler {
     void handle_receiving();
 
 public:
+    bool should_be_destroyed = false;
+
     std::shared_ptr<ClientConnector> client_connector;
     client_sending_queue_t client_sending_queue;
     client_receiving_queue_t client_receiving_queue;
@@ -42,6 +44,12 @@ public:
                     client_receiving_queue(std::move(_client_receiving_queue)),
                     client_receive(&ClientHandler::handle_receiving, this),
                     client_send(&ClientHandler::handle_sending, this) {}
+
+    ~ClientHandler() {
+        client_connector->socket->close();
+        client_send.join();
+        client_receive.join();
+    }
 
     bool is_player();
 

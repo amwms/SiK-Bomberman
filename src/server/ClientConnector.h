@@ -8,11 +8,11 @@ using boost::asio::ip::tcp;
 
 class ClientConnector {
     static const size_t buffer_size = 1e6;
-
-    std::shared_ptr<tcp::socket> socket;
     boost::array<char, buffer_size> buffer;
 
 public:
+    std::shared_ptr<tcp::socket> socket;
+
     ClientConnector(const std::shared_ptr<tcp::socket> &_socket) : socket(_socket) {}
 
     void send_message(const std::string &buffer);

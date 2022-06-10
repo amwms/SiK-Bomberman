@@ -249,6 +249,21 @@ void ServerGameHandler::send_message(const std::basic_string<char> &message) {
     }
 }
 
+void ServerGameHandler::delete_disconnected_clients() {
+    std::vector<std::shared_ptr<ClientHandler>> clients_to_be_deleted;
+
+    for (auto &client_handler : client_handlers) {
+        if (client_handler->should_be_destroyed) {
+            clients_to_be_deleted.push_back(client_handler);
+        }
+    }
+
+    // delete clients
+    for (auto &el : clients_to_be_deleted) {
+        client_handlers.erase(el);
+    }
+}
+
 void ServerGameHandler::handle_game_turn() {
     lock_all_receiving_queues_in_player_clients();
     game_state.update_bomb_timers();
@@ -289,6 +304,7 @@ void ServerGameHandler::handle_game_turn() {
 
     game_state.update_after_turn();
     game_state.reset_turn_data();
+    delete_disconnected_clients();
 }
 
 void ServerGameHandler::handle_join_server(JoinServer &action, ClientHandler &client_handler) {
@@ -333,6 +349,7 @@ void ServerGameHandler::handle_lobby() {
     while (game_state.is_lobby && game_state.current_players_count < game_state.players_count.get_num()) {
         handle_new_joins();
         sleep(1);
+        delete_disconnected_clients();
     }
 
     game_state.is_lobby = false;

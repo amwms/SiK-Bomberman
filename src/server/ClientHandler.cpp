@@ -5,55 +5,47 @@
 void ClientHandler::handle_sending() {
     try {
         while (true) {
-            try {
-                while (!client_sending_queue->is_empty()) {
-                    auto message = client_sending_queue->pop();
-                    client_connector->send_message(message);
-                }
-
-                sleep(1);
+            while (!client_sending_queue->is_empty()) {
+                auto message = client_sending_queue->pop();
+                client_connector->send_message(message);
             }
-            catch (DeserializationException &exception) {
 
-            }
+            sleep(1);
         }
     }
     catch (std::exception &exception) {
         std::cerr << exception.what() << std::endl;
+        should_be_destroyed = true;
     }
 }
 
 void ClientHandler::handle_receiving() {
     try {
         while (true) {
-            try {
-                std::string message_id = client_connector->receive_message(1);
-                assert(message_id.size() == 1);
+            std::string message_id = client_connector->receive_message(1);
+            assert(message_id.size() == 1);
 
-                switch (message_id[0]) {
-                    case 0:
-                        client_receiving_queue->push(tcp_deserialize_to_join_server_message(*client_connector));
-                        break;
-                    case 1:
-                        client_receiving_queue->push(tcp_deserialize_to_place_bomb_message());
-                        break;
-                    case 2:
-                        client_receiving_queue->push(tcp_deserialize_to_place_block_message());
-                        break;
-                    case 3:
-                        client_receiving_queue->push(tcp_deserialize_to_move_server_message(*client_connector));
-                        break;
-                    default:
-                        throw DeserializationException{};
-                }
-            }
-            catch (DeserializationException &exception) {
-
+            switch (message_id[0]) {
+                case 0:
+                    client_receiving_queue->push(tcp_deserialize_to_join_server_message(*client_connector));
+                    break;
+                case 1:
+                    client_receiving_queue->push(tcp_deserialize_to_place_bomb_message());
+                    break;
+                case 2:
+                    client_receiving_queue->push(tcp_deserialize_to_place_block_message());
+                    break;
+                case 3:
+                    client_receiving_queue->push(tcp_deserialize_to_move_server_message(*client_connector));
+                    break;
+                default:
+                    throw DeserializationException{};
             }
         }
     }
     catch (std::exception &exception) {
         std::cerr << exception.what() << std::endl;
+        should_be_destroyed = true;
     }
 }
 
