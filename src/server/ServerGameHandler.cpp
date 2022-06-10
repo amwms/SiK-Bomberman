@@ -31,8 +31,16 @@ static void count_explosions(ServerGameState &game_state, const bomb_id_t &bomb_
     Position start_position = game_state.bombs.at(bomb_id).get_position();
     std::set<Position> explosions;
 
-    // up from
     Position current_position = start_position;
+    // initial destruction of start position
+    auto block_it = game_state.blocks.find(current_position);
+    explosions.insert(current_position);
+    if (block_it != game_state.blocks.end()) {
+        game_state.blocks_destroyed_in_turn.insert(*block_it);
+        blocks_destroyed.push_back(*block_it);
+    }
+
+    // up from
     uint16_t radius = 0;
 
     while (game_state.blocks.find(current_position) == game_state.blocks.end()
