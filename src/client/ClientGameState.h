@@ -39,11 +39,13 @@ public:
 
     void update_after_turn();
 
+    void reset_after_game();
+
     void reset_turn_data();
 
     void update_bomb_timers();
 
-    LobbyMessage to_lobby_massage();
+    LobbyMessage to_lobby_message();
 
     GameMessage to_game_message();
 };

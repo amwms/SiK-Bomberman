@@ -7,12 +7,6 @@
 #include "GuiHandler.h"
 #include "ServerHandler.h"
 
-#define GUI_ADDRESS "gui-address"
-#define HELP "help"
-#define PLAYER_NAME "player-name"
-#define PORT "port"
-#define SERVER_ADDRESS "server-address"
-
 int main(int argc, char *argv[]) {
     Arguments arguments = parse_arguments(argc, argv);
 

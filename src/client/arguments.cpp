@@ -22,7 +22,6 @@ using address_t = std::string;
 
 static void print_exit(auto &message) {
     std::cerr << message << "\n";
-    exit(1);
 }
 
 [[maybe_unused]] static void print_input_arguments(po::variables_map &map) {
@@ -77,6 +76,7 @@ Arguments parse_arguments(int argc, char *argv[]) {
         // if the help argument was given then show help options of the program
         if (variables_map.count("help")) {
             print_exit(desc);
+            exit(0);
             __builtin_unreachable();
         }
 
@@ -84,6 +84,7 @@ Arguments parse_arguments(int argc, char *argv[]) {
 
         if (variables_map.count("redundant")) {
             print_exit("Wrong arguments - call -h (--help) for correct program options.\n");
+            exit(1);
             __builtin_unreachable();
         }
     }

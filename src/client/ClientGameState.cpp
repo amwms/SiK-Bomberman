@@ -51,7 +51,7 @@ static ListSerializer<T> cast_map_to_list(auto &to_cast) {
     return {list};
 }
 
-LobbyMessage ClientGameState::to_lobby_massage() {
+LobbyMessage ClientGameState::to_lobby_message() {
     return LobbyMessage{
         server_name,
         players_count,
@@ -78,4 +78,13 @@ GameMessage ClientGameState::to_game_message() {
         cast_set_to_list<Position>(explosions),
         scores
     };
+}
+
+void ClientGameState::reset_after_game() {
+    turn = 0;
+    players.get_map().clear();
+    blocks.clear();
+    bombs.clear();
+    player_positions.get_map().clear();
+    scores.get_map().clear();
 }

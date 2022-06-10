@@ -73,12 +73,13 @@ static void handle_game_ended_message(ServerConnector &server_connector, ClientG
     game_state.scores = game_ended_message.get_scores();
     game_state.in_lobby = true;
     game_state.should_send_update_to_gui = true;
+    game_state.reset_after_game();
 }
 
 void ServerHandler::send_message_to_gui() {
     if (game_state.should_send_update_to_gui) {
         if (game_state.in_lobby) {
-            gui_connector.send_message(game_state.to_lobby_massage().serialize());
+            gui_connector.send_message(game_state.to_lobby_message().serialize());
         }
         else {
             gui_connector.send_message(game_state.to_game_message().serialize());

@@ -20,7 +20,7 @@ public:
                   game_state(_client_game_state),
                   server_connector(_server_connector),
                   gui_connector(_gui_connector),
-                  callback_function(_callback_function){}
+                  callback_function(_callback_function) {}
 
     void operator()();
 };
