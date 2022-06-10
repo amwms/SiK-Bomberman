@@ -30,6 +30,7 @@ void ServerTcpAcceptor::operator()() {
         while (true) {
             std::shared_ptr<tcp::socket> socket = std::make_shared<tcp::socket>(io_context);
             acceptor.accept(*socket);
+            socket->set_option(boost::asio::ip::tcp::no_delay{true});
 
             auto queue_sending = std::make_shared<ConcurrentQueue<std::string>>();
             auto queue_receiving = std::make_shared<

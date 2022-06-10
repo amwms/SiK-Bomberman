@@ -58,7 +58,7 @@ std::vector<std::shared_ptr<Event>> ServerGameState::initialize_new_game() {
     return events;
 }
 
-static void update_players(ServerGameState &game_state){
+static void update_players_scores(ServerGameState &game_state){
     for (auto &player_id : game_state.robots_destroyed_in_turn) {
         game_state.scores.get_map().at(player_id).get_num()++;
     }
@@ -74,7 +74,7 @@ player_id_t ServerGameState::get_next_player_id() {
 
 void ServerGameState::update_after_turn() {
     turn_number++;
-    update_players(*this);
+    update_players_scores(*this);
 }
 
 void ServerGameState::reset_turn_data() {

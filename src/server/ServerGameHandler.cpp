@@ -297,7 +297,7 @@ void ServerGameHandler::handle_new_joins() {
     for (auto &client_handler : client_handlers) {
         if (!client_handler->is_player()) {
             client_handler->client_receiving_queue->lock_queue();
-            auto queue = client_handler->client_receiving_queue->get_queue_no_mutex();
+            auto &queue = client_handler->client_receiving_queue->get_queue_no_mutex();
 
             if (!queue.empty()) {
                 auto message = queue.front();

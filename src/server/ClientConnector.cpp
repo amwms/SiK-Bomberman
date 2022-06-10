@@ -12,5 +12,7 @@ void ClientConnector::send_message(const std::string &message) {
 }
 
 std::string ClientConnector::get_socket_address() {
-    return (*socket).remote_endpoint().address().to_string();
+    std::stringstream ss;
+    ss << socket->remote_endpoint();
+    return ss.str();
 }
