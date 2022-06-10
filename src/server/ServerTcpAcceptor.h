@@ -4,26 +4,32 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include "../utils/utils.h"
+#include "ClientHandler.h"
 
 using boost::asio::ip::tcp;
 
 class ServerTcpAcceptor {
-    UINT8Serializer counter = 0;
     using port_t = uint16_t;
 
     boost::asio::io_context &io_context;
     tcp::acceptor acceptor;
-    std::map<player_id_t, std::shared_ptr<tcp::socket>> &player_sockets;
+    std::set<std::shared_ptr<ClientHandler>> &client_handlers;
     std::function<void(void)> callback_function;
+
+    ServerGameState &game_state;
+    ClientConnector &client_connector;
 
 public:
     ServerTcpAcceptor(boost::asio::io_context &_io_context, port_t _port,
-                      std::map<player_id_t, std::shared_ptr<tcp::socket>> &_player_sockets,
-                      std::function<void(void)> &_callback_function) :
+                      std::set<std::shared_ptr<ClientHandler>> &_client_handlers,
+                      std::function<void(void)> &_callback_function,
+                      ServerGameState &_game_state, ClientConnector &_client_connector) :
                         io_context(_io_context),
                         acceptor(io_context, tcp::endpoint(tcp::v6(), _port)),
-                        player_sockets(_player_sockets),
-                        callback_function(_callback_function) {}
+                        client_handlers(_client_handlers),
+                        callback_function(_callback_function),
+                        game_state(_game_state),
+                        client_connector(_client_connector) {}
 
     void operator()();
 };
