@@ -2,14 +2,14 @@
 #define SIK_BOMBERMAN_RANDOMNUMBERGENERATOR_H
 
 #include <cstdint>
+#include <random>
 
 class RandomNumberGenerator {
     uint32_t seed;
-    uint32_t last_number = 0;
-    bool generated_r0 = false;
+    std::minstd_rand random;
 
 public:
-    RandomNumberGenerator(uint32_t seed) : seed(seed) {}
+    RandomNumberGenerator(uint32_t _seed) : seed(_seed), random(seed) {}
 
     uint32_t get_number();
 };
