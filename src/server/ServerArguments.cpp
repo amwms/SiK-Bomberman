@@ -91,7 +91,7 @@ ServerArguments parse_server_arguments(int argc, char *argv[]) {
 
         // if the help argument was given then show help options of the program
         if (variables_map.count("help")) {
-            print_exit(desc);
+            std::cout << desc << "\n";
             exit(0);
             __builtin_unreachable();
         }
