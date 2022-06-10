@@ -71,6 +71,7 @@ MapSerializer<Player> &GameStartedMessage::get_players() {
 std::string TurnMessage::serialize() const {
     std::string result{static_cast<char>(message_id)};
     result += turn.serialize();
+    result += UINT32Serializer{static_cast<uint32_t>(events.size())}.serialize();
 
     for (const auto &el : events) {
         result += el->serialize();
