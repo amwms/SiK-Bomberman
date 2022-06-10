@@ -7,27 +7,36 @@
 #include "../utils/utils.h"
 #include "ServerGameState.h"
 #include "../utils/ConcurrentQueue.h"
+#include "ClientHandler.h"
 
 using boost::asio::ip::tcp;
 
 class ServerGameHandler {
-    using queue_map_t = std::map<player_id_t, std::shared_ptr<ConcurrentQueue<std::string>>>;
+    using client_receiving_queue_t =
+        std::queue<std::variant<JoinServer, PlaceBombServer, PlaceBlockServer, MoveServer>>;
+    using action_t = std::variant<JoinServer, PlaceBombServer, PlaceBlockServer, MoveServer>;
 
     ServerGameState &game_state;
     std::function<void(void)> callback_function;
-    std::map<player_id_t, std::shared_ptr<ConcurrentQueue<std::string>>> &player_send_message_queues;
+    std::set<std::shared_ptr<ClientHandler>> &client_handlers;
 
     void handle_game_turn();
 
     void send_message(TurnMessage &message);
 
+    void lock_all_queues_in_player_clients();
+    void unlock_all_queues_in_player_clients();
+
+    void clean_all_client_queues();
+    action_t get_last_action_in_queue(client_receiving_queue_t &receiving_queue);
+
 public:
     ServerGameHandler(ServerGameState &_game_state,
-                      queue_map_t &_player_send_message_queues,
+                      std::set<std::shared_ptr<ClientHandler>> &_client_handlers,
                       std::function<void(void)> &_callback_function) :
                         game_state(_game_state),
                         callback_function(_callback_function),
-                        player_send_message_queues(_player_send_message_queues){}
+                        client_handlers(_client_handlers) {}
 
     void operator()();
 };

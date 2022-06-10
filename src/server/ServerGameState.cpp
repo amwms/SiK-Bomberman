@@ -47,6 +47,9 @@ std::vector<std::shared_ptr<Event>> ServerGameState::initialize_new_game() {
     std::vector<std::shared_ptr<Event>> events;
 
     turn_number = 0;
+    current_player_id = 0;
+    current_bomb_id = 0;
+
     reset_game_turns(*this);
     initialize_player_scores(*this);
     initialize_player_positions(*this, events);
@@ -70,7 +73,7 @@ void ServerGameState::update_after_turn() {
 void ServerGameState::reset_turn_data() {
     blocks_destroyed_in_turn.clear();
     robots_destroyed_in_turn.clear();
-    client_turn_action.clear();
+//    client_turn_action.clear();
 }
 
 void ServerGameState::update_bomb_timers() {

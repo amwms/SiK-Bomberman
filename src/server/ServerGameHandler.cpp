@@ -4,6 +4,8 @@
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
+using action_t = std::variant<JoinServer, PlaceBombServer, PlaceBlockServer, MoveServer>;
+
 static bool out_of_bounds(ServerGameState &game_state, Position &position) {
     return position.get_x() >= game_state.size_x.get_num()
            || position.get_y() >= game_state.size_y.get_num();
@@ -181,29 +183,76 @@ static void handle_move(ServerGameState &game_state, MoveServer &action, const p
     }
 }
 
+static void ignore_action([[maybe_unused]] auto &action) {}
+
+void ServerGameHandler::clean_all_client_queues() {
+    for (auto &client_handler : client_handlers) {
+        auto queue = client_handler->client_receiving_queue->get_queue_no_mutex();
+        while (!queue.empty()) {
+            queue.pop();
+        }
+    }
+}
+
+action_t ServerGameHandler::get_last_action_in_queue(client_receiving_queue_t &receiving_queue) {
+    action_t action = receiving_queue.front();
+    receiving_queue.pop();
+
+    while (!receiving_queue.empty()) {
+        action_t temp = receiving_queue.front();
+
+        std::visit(overloaded {
+                [&](JoinServer &t) { ignore_action(t); },
+                [&](PlaceBombServer &t) { action = t; },
+                [&](PlaceBlockServer &t) { action = t; },
+                [&](MoveServer &t) { action = t; },
+        }, temp);
+    }
+
+    return action;
+}
+
+void ServerGameHandler::lock_all_queues_in_player_clients() {
+    for (auto &client_handler : client_handlers) {
+        client_handler->client_receiving_queue->lock_queue();
+    }
+}
+
+void ServerGameHandler::unlock_all_queues_in_player_clients() {
+    for (auto &client_handler : client_handlers) {
+        client_handler->client_receiving_queue->unlock_queue();
+    }
+}
+
 void ServerGameHandler::send_message(TurnMessage &message) {
-    for (auto &[player_id, queue] : player_send_message_queues) {
-        queue->push(message.serialize());
+    for (auto &client_handler : client_handlers) {
+        client_handler->client_sending_queue->push(message.serialize());
     }
 }
 
 void ServerGameHandler::handle_game_turn() {
-    std::unique_lock lock{game_state.mutex};
+    lock_all_queues_in_player_clients();
     game_state.update_bomb_timers();
 
     std::vector<std::shared_ptr<Event>> events;
     handle_explosions(game_state, events);
 
-    for (auto &[key, value] : game_state.client_turn_action) {
-        player_id_t player_id = key;
-        bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
+    for (auto &client_handler : client_handlers) {
+        auto receiving_queue = client_handler->client_receiving_queue->get_queue_no_mutex();
+        if (client_handler->is_player() && !receiving_queue.empty()) {
+            action_t value = get_last_action_in_queue(receiving_queue);
 
-        if (!is_robot_destroyed) {
-            std::visit(overloaded{
-                    [&](PlaceBombServer &action) { handle_place_bomb(game_state, action, player_id, events); },
-                    [&](PlaceBlockServer &action) { handle_place_block(game_state, action, player_id, events); },
-                    [&](MoveServer &action) { handle_move(game_state, action, player_id, events); },
-            }, value);
+            player_id_t player_id = client_handler->get_player_id();
+            bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
+
+            if (!is_robot_destroyed) {
+                std::visit(overloaded{
+                        [&](JoinServer &action) { ignore_action(action); },
+                        [&](PlaceBombServer &action) { handle_place_bomb(game_state, action, player_id, events); },
+                        [&](PlaceBlockServer &action) { handle_place_block(game_state, action, player_id, events); },
+                        [&](MoveServer &action) { handle_move(game_state, action, player_id, events); },
+                }, value);
+            }
         }
     }
 
@@ -219,6 +268,9 @@ void ServerGameHandler::handle_game_turn() {
 
     game_state.update_after_turn();
     game_state.reset_turn_data();
+    clean_all_client_queues();
+
+    unlock_all_queues_in_player_clients();
 }
 
 void ServerGameHandler::operator()() {
