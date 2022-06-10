@@ -35,6 +35,18 @@ public:
         std::shared_lock lock{mutex};
         return queue.empty();
     }
+
+    void lock_queue() {
+         mutex.lock();
+    }
+
+    void unlock_queue() {
+        mutex.unlock();
+    }
+
+    std::queue<T> &get_queue_no_mutex() {
+        return queue;
+    }
 };
 
 
