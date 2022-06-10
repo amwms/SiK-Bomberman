@@ -209,6 +209,7 @@ action_t ServerGameHandler::get_last_action_in_queue(client_receiving_queue_t &r
 
     while (!receiving_queue.empty()) {
         action_t temp = receiving_queue.front();
+        receiving_queue.pop();
 
         std::visit(overloaded {
                 [&](JoinServer &t) { ignore_action(t); },
@@ -280,9 +281,6 @@ void ServerGameHandler::handle_game_turn() {
 
     game_state.update_after_turn();
     game_state.reset_turn_data();
-//    clean_all_client_queues();
-//
-//    unlock_all_queues_in_player_clients();
 }
 
 void ServerGameHandler::handle_join_server(JoinServer &action, ClientHandler &client_handler) {
@@ -332,6 +330,12 @@ void ServerGameHandler::handle_lobby() {
     game_state.is_lobby = false;
 }
 
+void ServerGameHandler::clear_client_handlers_as_players() {
+    for (auto &client_handler : client_handlers) {
+        client_handler->set_player_id({});
+    }
+}
+
 void ServerGameHandler::handle_game() {
     // GameStarted
     GameStartedMessage game_started_message{game_state.players};
@@ -355,6 +359,8 @@ void ServerGameHandler::handle_game() {
     GameEndedMessage game_ended_message{game_state.scores};
     send_message(game_ended_message.serialize());
 
+    game_state.reset_game_state();
+    clear_client_handlers_as_players();
     game_state.is_lobby = true;
 }
 
@@ -362,7 +368,7 @@ void ServerGameHandler::handle_game() {
 void ServerGameHandler::operator()() {
     try {
         while (true) {
-            if(game_state.is_lobby) {
+            if (game_state.is_lobby) {
                 handle_lobby();
             }
             else {

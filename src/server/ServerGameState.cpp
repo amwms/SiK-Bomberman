@@ -100,3 +100,21 @@ HelloMessage ServerGameState::to_hello_message() {
     };
 }
 
+void ServerGameState::reset_game_state() {
+    current_players_count = 0;
+    players.get_map().clear();
+    blocks.clear();
+    bombs.clear();
+    player_positions.get_map().clear();
+    scores.get_map().clear();
+
+    turn_number = 0;
+    game_turns.clear();
+
+    current_player_id = 0;
+    current_bomb_id = 0;
+
+    blocks_destroyed_in_turn.clear();
+    robots_destroyed_in_turn.clear();
+}
+

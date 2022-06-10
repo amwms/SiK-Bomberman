@@ -63,6 +63,8 @@ public:
 
     std::vector<std::shared_ptr<Event>> initialize_new_game();
 
+    void reset_game_state();
+
     player_id_t get_next_player_id();
 
     bomb_id_t get_next_bomb_id();

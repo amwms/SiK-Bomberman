@@ -47,7 +47,7 @@ public:
 
     player_id_t get_player_id();
 
-    void set_player_id(player_id_t id);
+    void set_player_id(std::optional<player_id_t> id);
 };
 
 #endif //SIK_BOMBERMAN_CLIENTHANDLER_H

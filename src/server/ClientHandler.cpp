@@ -65,7 +65,7 @@ player_id_t ClientHandler::get_player_id() {
     return player_id.value();
 }
 
-void ClientHandler::set_player_id(player_id_t id) {
+void ClientHandler::set_player_id(std::optional<player_id_t> id) {
     player_id = id;
 }
 
