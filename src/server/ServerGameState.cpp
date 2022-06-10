@@ -4,8 +4,8 @@ static void initialize_block_positions(ServerGameState &game_state, std::vector<
     game_state.blocks.clear();
 
     for (size_t i = 0; i < game_state.initial_blocks_count; i++) {
-        uint16_t x_position = (uint16_t) game_state.randomizer.get_number() % game_state.size_x.get_num();
-        uint16_t y_position = (uint16_t) game_state.randomizer.get_number() % game_state.size_y.get_num();
+        uint16_t x_position = (uint16_t) (game_state.randomizer.get_number() % game_state.size_x.get_num());
+        uint16_t y_position = (uint16_t) (game_state.randomizer.get_number() % game_state.size_y.get_num());
 
         Position position{x_position, y_position};
 
@@ -22,8 +22,8 @@ static void initialize_player_positions(ServerGameState &game_state, std::vector
     game_state.player_positions.get_map().clear();
 
     for (auto &[key, value] : game_state.players.get_map()) {
-        uint16_t x_position = (uint16_t) game_state.randomizer.get_number() % game_state.size_x.get_num();
-        uint16_t y_position = (uint16_t) game_state.randomizer.get_number() % game_state.size_y.get_num();
+        uint16_t x_position = (uint16_t) (game_state.randomizer.get_number() % game_state.size_x.get_num());
+        uint16_t y_position = (uint16_t) (game_state.randomizer.get_number() % game_state.size_y.get_num());
 
         player_id_t player_id = key;
         Position position{x_position, y_position};

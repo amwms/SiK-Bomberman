@@ -24,6 +24,7 @@ class ServerGameHandler {
     void handle_new_joins();
     void handle_game();
     void handle_lobby();
+    std::map<player_id_t, action_t> read_player_actions();
 
     void send_message(const std::basic_string<char> &message);
 

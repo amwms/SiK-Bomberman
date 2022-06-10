@@ -115,8 +115,8 @@ static void update_blocks(ServerGameState &game_state){
 }
 
 static Position generate_random_position(ServerGameState &game_state) {
-    uint16_t x_position = (uint16_t) game_state.randomizer.get_number() % game_state.size_x.get_num();
-    uint16_t y_position = (uint16_t) game_state.randomizer.get_number() % game_state.size_y.get_num();
+    uint16_t x_position = (uint16_t) (game_state.randomizer.get_number() % game_state.size_x.get_num());
+    uint16_t y_position = (uint16_t) (game_state.randomizer.get_number() % game_state.size_y.get_num());
 
     return {x_position, y_position};
 }
@@ -264,6 +264,23 @@ void ServerGameHandler::delete_disconnected_clients() {
     }
 }
 
+std::map<player_id_t, action_t> ServerGameHandler::read_player_actions() {
+    std::map<player_id_t, action_t> map;
+
+    for (auto &client_handler : client_handlers) {
+        auto receiving_queue = client_handler->client_receiving_queue->get_queue_no_mutex();
+
+        if (client_handler->is_player() && !receiving_queue.empty()) {
+            player_id_t player_id = client_handler->get_player_id();
+            action_t action = get_last_action_in_queue(receiving_queue);
+
+            map.insert({player_id, action});
+        }
+    }
+
+    return  map;
+}
+
 void ServerGameHandler::handle_game_turn() {
     lock_all_receiving_queues_in_player_clients();
     game_state.update_bomb_timers();
@@ -271,32 +288,69 @@ void ServerGameHandler::handle_game_turn() {
     std::vector<std::shared_ptr<Event>> events;
     handle_explosions(game_state, events);
 
-    for (auto &client_handler : client_handlers) {
-        auto receiving_queue = client_handler->client_receiving_queue->get_queue_no_mutex();
-        if (client_handler->is_player() && !receiving_queue.empty()) {
-            action_t value = get_last_action_in_queue(receiving_queue);
+    auto player_action_map = read_player_actions();
 
-            player_id_t player_id = client_handler->get_player_id();
-            bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
+    for (auto &el : game_state.players.get_map()) {
+        auto player_id = el.first;
+        bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
 
-            if (!is_robot_destroyed) {
+        if (!is_robot_destroyed) {
+            auto action_it = player_action_map.find(player_id);
+            if (action_it != player_action_map.end()) {
+                action_t value = action_it->second;
+
                 std::visit(overloaded{
                         [&](JoinServer &action) { ignore_action(action); },
                         [&](PlaceBombServer &action) { handle_place_bomb(game_state, action, player_id, events); },
-                        [&](PlaceBlockServer &action) { handle_place_block(game_state, action, player_id, events); },
+                        [&](PlaceBlockServer &action) {
+                            handle_place_block(game_state, action, player_id, events);
+                        },
                         [&](MoveServer &action) { handle_move(game_state, action, player_id, events); },
                 }, value);
             }
         }
+        else if (is_robot_destroyed) {
+            handle_destroy_robot(game_state, player_id, events);
+        }
     }
+
+//    for (auto &client_handler : client_handlers) {
+//        auto receiving_queue = client_handler->client_receiving_queue->get_queue_no_mutex();
+//
+//        if (client_handler->is_player() /*&& !receiving_queue.empty()*/) {
+//            player_id_t player_id = client_handler->get_player_id();
+//            bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
+//
+//            if (!receiving_queue.empty()) {
+//                action_t value = get_last_action_in_queue(receiving_queue);
+//
+////                player_id_t player_id = client_handler->get_player_id();
+////                bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
+//
+//                if (!is_robot_destroyed) {
+//                    std::visit(overloaded{
+//                            [&](JoinServer &action) { ignore_action(action); },
+//                            [&](PlaceBombServer &action) { handle_place_bomb(game_state, action, player_id, events); },
+//                            [&](PlaceBlockServer &action) {
+//                                handle_place_block(game_state, action, player_id, events);
+//                            },
+//                            [&](MoveServer &action) { handle_move(game_state, action, player_id, events); },
+//                    }, value);
+//                }
+//            }
+//            else if (is_robot_destroyed) {
+//                handle_destroy_robot(game_state, player_id, events);
+//            }
+//        }
+//    }
 
     clean_all_client_queues();
     unlock_all_receiving_queues_in_player_clients();
 
     // update after turn
-    for (auto &player_id : game_state.robots_destroyed_in_turn) {
-        handle_destroy_robot(game_state, player_id, events);
-    }
+//    for (auto &player_id : game_state.robots_destroyed_in_turn) {
+//        handle_destroy_robot(game_state, player_id, events);
+//    }
 
     TurnMessage turn_message{game_state.turn_number, events};
     game_state.game_turns.push_back(turn_message);
@@ -371,13 +425,20 @@ void ServerGameHandler::handle_game() {
     TurnMessage turn_0{0, events};
     game_state.game_turns.push_back(turn_0);
     send_message(turn_0.serialize());
+    auto before = std::chrono::system_clock::now();
     game_state.update_after_turn();
     game_state.reset_turn_data();
+    auto after = std::chrono::system_clock::now();
 
-    uint turn_duration = (uint) game_state.turn_duration / 1000; // TODO - check
+    auto turn_duration_time = std::chrono::milliseconds(game_state.turn_duration);
     while (game_state.turn_number <= game_state.game_length.get_num()) {
-        sleep(turn_duration);
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(after - before);
+        std::this_thread::sleep_for(turn_duration_time - elapsed);
+        before = std::chrono::system_clock::now();
+
         handle_game_turn();
+
+        after = std::chrono::system_clock::now();
     }
 
     // GameEnded
