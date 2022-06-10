@@ -47,10 +47,6 @@ public:
     std::set<Position> blocks_destroyed_in_turn;
     std::set<player_id_t> robots_destroyed_in_turn;
 
-    // players' actions vector - for each turn
-//    std::shared_mutex mutex;
-//    std::map<player_id_t, std::variant<PlaceBombServer, PlaceBlockServer, MoveServer>> client_turn_action;
-
     ServerGameState(RandomNumberGenerator &_randomizer, const std::string &_server_name, uint8_t _players_count,
                     uint16_t _size_x, uint16_t _size_y, uint16_t _game_length, uint16_t _explosion_radius,
                     uint16_t _bomb_timer, uint16_t _initial_blocks_count, uint64_t _turn_duration) :

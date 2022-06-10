@@ -80,7 +80,6 @@ void ServerGameState::update_after_turn() {
 void ServerGameState::reset_turn_data() {
     blocks_destroyed_in_turn.clear();
     robots_destroyed_in_turn.clear();
-//    client_turn_action.clear();
 }
 
 void ServerGameState::update_bomb_timers() {

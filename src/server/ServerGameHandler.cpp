@@ -138,11 +138,18 @@ static void handle_destroy_robot(ServerGameState &game_state, const player_id_t 
 }
 
 static void handle_explosions(ServerGameState &game_state, std::vector<std::shared_ptr<Event>> &events) {
+    std::vector<bomb_id_t> bombs_exploded;
+
     for (auto &[bomb_id, bomb] : game_state.bombs) {
         if (bomb.get_timer() == 0) {
             events.push_back(handle_one_explosion(game_state, bomb_id));
-            game_state.bombs.erase(bomb_id);
+            bombs_exploded.push_back(bomb_id);
         }
+    }
+
+    // delete exploded bombs
+    for (auto &el : bombs_exploded) {
+        game_state.bombs.erase(el);
     }
 
     update_blocks(game_state);
@@ -189,7 +196,7 @@ static void ignore_action([[maybe_unused]] auto &action) {}
 
 void ServerGameHandler::clean_all_client_queues() {
     for (auto &client_handler : client_handlers) {
-        auto queue = client_handler->client_receiving_queue->get_queue_no_mutex();
+        auto &queue = client_handler->client_receiving_queue->get_queue_no_mutex();
         while (!queue.empty()) {
             queue.pop();
         }
