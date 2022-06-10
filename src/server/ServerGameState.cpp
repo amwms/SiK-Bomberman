@@ -8,10 +8,13 @@ static void initialize_block_positions(ServerGameState &game_state, std::vector<
         uint16_t y_position = (uint16_t) game_state.randomizer.get_number() % game_state.size_y.get_num();
 
         Position position{x_position, y_position};
-        std::shared_ptr<Event> event = std::make_shared<BlockPlacedEvent>(position);
 
-        game_state.blocks.insert(position);
-        events.push_back(event);
+        if (!game_state.blocks.contains(position)) {
+            std::shared_ptr<Event> event = std::make_shared<BlockPlacedEvent>(position);
+
+            game_state.blocks.insert(position);
+            events.push_back(event);
+        }
     }
 }
 

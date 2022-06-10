@@ -126,7 +126,7 @@ static Position count_new_position(Position &old_position, Direction &direction)
 
 static void handle_destroy_robot(ServerGameState &game_state, const player_id_t &player_id,
                                  std::vector<std::shared_ptr<Event>> &events) {
-    auto player_position_it = game_state.player_positions.get_map().find(player_id);  // .at()
+    auto player_position_it = game_state.player_positions.get_map().find(player_id);
 
     if (player_position_it != game_state.player_positions.get_map().end()) {
         Position position = generate_random_position(game_state);
@@ -184,7 +184,8 @@ static void handle_move(ServerGameState &game_state, MoveServer &action, const p
     Direction move_direction = action.get_direction();
     Position new_position = count_new_position(old_position, move_direction);
 
-    if (!game_state.blocks.contains(new_position)) {
+    if (!game_state.blocks.contains(new_position) && !game_state.robots_destroyed_in_turn.contains(player_id)
+        && !out_of_bounds(game_state, new_position)) {
         game_state.player_positions.get_map().at(player_id) = new_position;
 
         std::shared_ptr<Event> event = std::make_shared<PlayerMovedEvent>(player_id, new_position);
@@ -269,15 +270,14 @@ void ServerGameHandler::handle_game_turn() {
     clean_all_client_queues();
     unlock_all_receiving_queues_in_player_clients();
 
-    TurnMessage turn_message{game_state.turn_number, events};
-
-    game_state.game_turns.push_back(turn_message);
-    send_message(turn_message.serialize());
-
     // update after turn
     for (auto &player_id : game_state.robots_destroyed_in_turn) {
         handle_destroy_robot(game_state, player_id, events);
     }
+
+    TurnMessage turn_message{game_state.turn_number, events};
+    game_state.game_turns.push_back(turn_message);
+    send_message(turn_message.serialize());
 
     game_state.update_after_turn();
     game_state.reset_turn_data();
