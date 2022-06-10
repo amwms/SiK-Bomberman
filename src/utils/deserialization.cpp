@@ -33,6 +33,14 @@ static StringSerializer tcp_deserialize_to_string_serializer(ServerConnector &se
     return {string};
 }
 
+static StringSerializer tcp_client_connector_deserialize_to_string_serializer(ClientConnector &client_connector) {
+    std::string message = client_connector.receive_message(1);
+    assert(message.size() == 1);
+
+    std::string string = client_connector.receive_message(static_cast<size_t>(message[0]));
+    return {string};
+}
+
 static UINT8Serializer tcp_deserialize_to_uint8_serializer(ServerConnector &server_connector) {
     std::string number = server_connector.receive_message(1);
     assert(number.size() == 1);
@@ -66,6 +74,13 @@ static Position tcp_deserialize_to_position_serializer (ServerConnector &server_
     UINT16Serializer y = tcp_deserialize_to_uint16_serializer(server_connector);
 
     return {x, y};
+}
+
+static Direction tcp_client_connector_deserialize_to_direction(ClientConnector &client_connector) {
+    std::string message = client_connector.receive_message(1);
+    assert(message.size() == 1);
+
+    return {static_cast<uint8_t>(message[0])};
 }
 
 static MapSerializer<Player> tcp_deserialize_to_player_map_serializer(ServerConnector &server_connector) {
@@ -230,4 +245,24 @@ GameEndedMessage tcp_deserialize_to_game_ended_message(ServerConnector &server_c
     MapSerializer<score_t> scores = tcp_deserialize_to_uint32_map_serializer(server_connector);
 
     return {scores};
+}
+
+JoinServer tcp_deserialize_to_join_server_message(ClientConnector &client_connector) {
+    StringSerializer name = tcp_client_connector_deserialize_to_string_serializer(client_connector);
+
+    return {name};
+}
+
+PlaceBombServer tcp_deserialize_to_place_bomb_message() {
+    return {};
+}
+
+PlaceBlockServer tcp_deserialize_to_place_block_message() {
+    return {};
+}
+
+MoveServer tcp_deserialize_to_move_server_message(ClientConnector &client_connector) {
+    Direction direction = tcp_client_connector_deserialize_to_direction(client_connector);
+
+    return {direction};
 }

@@ -6,6 +6,7 @@
 #include "messages/InputMessage.h"
 #include "messages/ServerMessage.h"
 #include "../client/ServerConnector.h"
+#include "../server/ClientConnector.h"
 
 class DeserializationException : public std::exception {};
 
@@ -20,5 +21,13 @@ GameStartedMessage tcp_deserialize_to_game_started_message(ServerConnector &serv
 TurnMessage tcp_deserialize_to_turn_message(ServerConnector &server_connector);
 
 GameEndedMessage tcp_deserialize_to_game_ended_message(ServerConnector &server_connector);
+
+JoinServer tcp_deserialize_to_join_server_message(ClientConnector &client_connector);
+
+PlaceBombServer tcp_deserialize_to_place_bomb_message();
+
+PlaceBlockServer tcp_deserialize_to_place_block_message();
+
+MoveServer tcp_deserialize_to_move_server_message(ClientConnector &client_connector);
 
 #endif //SIK_BOMBERMAN_DESERIALIZATION_H
