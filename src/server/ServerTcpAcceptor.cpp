@@ -9,6 +9,8 @@ static void handle_welcome_message(ServerGameState &game_state, const std::share
     HelloMessage hello_message = game_state.to_hello_message();
     send_message(hello_message.serialize(), client_handler);
 
+    game_state.mutex.lock();
+
     if (game_state.is_lobby) {
         for (auto &player_it : game_state.players.get_map()) {
             player_id_t player_id = player_it.first;
@@ -27,6 +29,8 @@ static void handle_welcome_message(ServerGameState &game_state, const std::share
             send_message(turn_message.serialize(), client_handler);
         }
     }
+
+    game_state.mutex.unlock();
 }
 
 

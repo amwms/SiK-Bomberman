@@ -314,43 +314,8 @@ void ServerGameHandler::handle_game_turn() {
         }
     }
 
-//    for (auto &client_handler : client_handlers) {
-//        auto receiving_queue = client_handler->client_receiving_queue->get_queue_no_mutex();
-//
-//        if (client_handler->is_player() /*&& !receiving_queue.empty()*/) {
-//            player_id_t player_id = client_handler->get_player_id();
-//            bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
-//
-//            if (!receiving_queue.empty()) {
-//                action_t value = get_last_action_in_queue(receiving_queue);
-//
-////                player_id_t player_id = client_handler->get_player_id();
-////                bool is_robot_destroyed = game_state.robots_destroyed_in_turn.contains(player_id);
-//
-//                if (!is_robot_destroyed) {
-//                    std::visit(overloaded{
-//                            [&](JoinServer &action) { ignore_action(action); },
-//                            [&](PlaceBombServer &action) { handle_place_bomb(game_state, action, player_id, events); },
-//                            [&](PlaceBlockServer &action) {
-//                                handle_place_block(game_state, action, player_id, events);
-//                            },
-//                            [&](MoveServer &action) { handle_move(game_state, action, player_id, events); },
-//                    }, value);
-//                }
-//            }
-//            else if (is_robot_destroyed) {
-//                handle_destroy_robot(game_state, player_id, events);
-//            }
-//        }
-//    }
-
     clean_all_client_queues();
     unlock_all_receiving_queues_in_player_clients();
-
-    // update after turn
-//    for (auto &player_id : game_state.robots_destroyed_in_turn) {
-//        handle_destroy_robot(game_state, player_id, events);
-//    }
 
     TurnMessage turn_message{game_state.turn_number, events};
     game_state.game_turns.push_back(turn_message);
@@ -401,8 +366,11 @@ void ServerGameHandler::handle_new_joins() {
 
 void ServerGameHandler::handle_lobby() {
     while (game_state.is_lobby && game_state.current_players_count < game_state.players_count.get_num()) {
+        game_state.mutex.lock();
         handle_new_joins();
-        sleep(1);
+        game_state.mutex.unlock();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds{50});
         delete_disconnected_clients();
     }
 
@@ -421,6 +389,8 @@ void ServerGameHandler::handle_game() {
     send_message(game_started_message.serialize());
 
     // Turns
+    game_state.mutex.lock();
+    // turn 0
     auto events = game_state.initialize_new_game();
     TurnMessage turn_0{0, events};
     game_state.game_turns.push_back(turn_0);
@@ -430,13 +400,17 @@ void ServerGameHandler::handle_game() {
     game_state.reset_turn_data();
     auto after = std::chrono::system_clock::now();
 
+    game_state.mutex.unlock();
+
     auto turn_duration_time = std::chrono::milliseconds(game_state.turn_duration);
     while (game_state.turn_number <= game_state.game_length.get_num()) {
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(after - before);
         std::this_thread::sleep_for(turn_duration_time - elapsed);
         before = std::chrono::system_clock::now();
 
+        game_state.mutex.lock();
         handle_game_turn();
+        game_state.mutex.unlock();
 
         after = std::chrono::system_clock::now();
     }

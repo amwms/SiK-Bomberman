@@ -12,6 +12,7 @@
 
 class ServerGameState {
 public:
+    std::mutex mutex;
     bool is_lobby;
 
     // server game settings

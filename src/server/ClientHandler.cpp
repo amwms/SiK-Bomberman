@@ -1,4 +1,3 @@
-#include <iostream>
 #include "ClientHandler.h"
 #include "../utils/deserialization.h"
 
@@ -9,8 +8,6 @@ void ClientHandler::handle_sending() {
                 auto message = client_sending_queue->pop();
                 client_connector->send_message(message);
             }
-
-            sleep(1);
         }
     }
     catch (std::exception &exception) {
