@@ -13,8 +13,6 @@ class ClientHandler {
     using client_sending_queue_t = std::shared_ptr<ConcurrentQueue<std::string>>;
 
     ServerGameState &game_state;
-    std::function<void(void)> callback_function;
-
     std::optional<player_id_t> player_id;
 
     void handle_sending();
@@ -33,11 +31,9 @@ private:
 
 public:
     ClientHandler(const std::shared_ptr<ClientConnector> &_client_connector, ServerGameState &_game_state,
-                  std::function<void(void)> &_callback_function,
                   client_sending_queue_t _client_sending_queue,
                   client_receiving_queue_t _client_receiving_queue) :
                     game_state(_game_state),
-                    callback_function(_callback_function),
                     player_id(),
                     client_connector(_client_connector),
                     client_sending_queue(std::move(_client_sending_queue)),

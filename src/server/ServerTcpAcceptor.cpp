@@ -42,15 +42,12 @@ void ServerTcpAcceptor::operator()() {
                     ConcurrentQueue<std::variant<JoinServer, PlaceBombServer, PlaceBlockServer, MoveServer>>>();
             std::shared_ptr<ClientConnector> client_connector = std::make_shared<ClientConnector>(socket);
 
-            auto client_pointer = std::make_shared<ClientHandler>(client_connector, game_state, callback_function,
+            auto client_pointer = std::make_shared<ClientHandler>(client_connector, game_state,
                                                            queue_sending, queue_receiving);
 
             client_handlers.insert(client_pointer);
             handle_welcome_message(game_state, client_pointer);
         }
     }
-    catch (std::exception &exception) {
-        std::cerr << exception.what() << std::endl;
-        callback_function();
-    }
+    catch (std::exception &exception) {}
 }

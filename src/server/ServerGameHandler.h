@@ -17,7 +17,6 @@ class ServerGameHandler {
     using action_t = std::variant<JoinServer, PlaceBombServer, PlaceBlockServer, MoveServer>;
 
     ServerGameState &game_state;
-    std::function<void(void)> callback_function;
     std::set<std::shared_ptr<ClientHandler>> &client_handlers;
 
     void handle_game_turn();
@@ -38,10 +37,8 @@ class ServerGameHandler {
 
 public:
     ServerGameHandler(ServerGameState &_game_state,
-                      std::set<std::shared_ptr<ClientHandler>> &_client_handlers,
-                      std::function<void(void)> &_callback_function) :
+                      std::set<std::shared_ptr<ClientHandler>> &_client_handlers) :
                         game_state(_game_state),
-                        callback_function(_callback_function),
                         client_handlers(_client_handlers) {}
 
     void operator()();

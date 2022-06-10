@@ -400,14 +400,10 @@ void ServerGameHandler::operator()() {
                 handle_game();
             }
 
-            // TODO -??
             lock_all_receiving_queues_in_player_clients();
             clean_all_client_queues();
             unlock_all_receiving_queues_in_player_clients();
         }
     }
-    catch (std::exception &exception) {
-        std::cerr << exception.what() << std::endl;
-        callback_function();
-    }
+    catch (std::exception &exception) {}
 }

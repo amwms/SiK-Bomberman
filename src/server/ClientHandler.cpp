@@ -14,7 +14,6 @@ void ClientHandler::handle_sending() {
         }
     }
     catch (std::exception &exception) {
-        std::cerr << exception.what() << std::endl;
         should_be_destroyed = true;
     }
 }
@@ -44,7 +43,6 @@ void ClientHandler::handle_receiving() {
         }
     }
     catch (std::exception &exception) {
-        std::cerr << exception.what() << std::endl;
         should_be_destroyed = true;
     }
 }

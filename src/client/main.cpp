@@ -38,9 +38,7 @@ int main(int argc, char *argv[]) {
         std::unique_lock<std::mutex> lock{m};
         cond.wait(lock, [&] { return val != std::thread::id{}; });
     }
-    catch (std::exception &exception) {
-        std::cerr << exception.what() << std::endl;
-    }
+    catch (std::exception &exception) {}
 
     exit(1);
 }
